@@ -20,6 +20,16 @@ export async function GET(request: Request) {
 
         let accountId = userData?.stripe_account_id
 
+        // Verify if the account exists in the current environment (Test vs Live)
+        if (accountId) {
+            try {
+                await stripe.accounts.retrieve(accountId)
+            } catch (error) {
+                console.warn('Stripe account not found (likely environment mismatch), creating new one.')
+                accountId = null
+            }
+        }
+
         if (!accountId) {
             const account = await stripe.accounts.create({
                 type: 'express',
