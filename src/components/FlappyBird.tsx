@@ -251,6 +251,7 @@ export function FlappyBird({ initialHighScore }: FlappyBirdProps) {
                 width={400}
                 height={500}
                 className="border-4 border-neutral-800 rounded-lg cursor-pointer shadow-2xl"
+                onClick={handleJump}
             />
             <p className="mt-4 text-neutral-500 text-sm">Click or Press Space to Jump</p>
         </div>

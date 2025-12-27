@@ -1,6 +1,6 @@
 'use client';
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
-import confetti from "canvas-confetti";
+import confetti from 'canvas-confetti';
 import React, { useEffect, useState } from "react";
 import { FlappyBird } from "@/components/FlappyBird";
 import { getFlappyScore } from "./actions";
