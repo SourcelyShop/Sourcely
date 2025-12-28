@@ -85,7 +85,7 @@ export function AssetCard({ asset }: { asset: AssetListing }) {
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                         <span className="font-bold text-xl text-white tracking-tight">
-                            ${(asset.price_cents / 100).toFixed(2)}
+                            {asset.price_cents === 0 ? 'Free' : `$${(asset.price_cents / 100).toFixed(2)}`}
                         </span>
                         <span className="text-xs font-semibold bg-white text-black px-3 py-1.5 rounded-full transition-transform group-hover:scale-105">
                             Buy Now

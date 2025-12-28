@@ -61,7 +61,7 @@ export default function NewListingPage() {
                                         id="price"
                                         name="price"
                                         type="number"
-                                        min="0.50"
+                                        min="0"
                                         step="0.01"
                                         required
                                         className="w-full pl-10 pr-4 py-3 rounded-lg bg-white border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"

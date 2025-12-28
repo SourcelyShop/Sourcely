@@ -5,34 +5,20 @@ export const CHANGELOG_DATA = [
         content: `
         Released to public!
         + Added new version notification
-        * Changed the premium payment system
+        + Added new discover page! https://sourcely.shop/discover
+        * Changed premium payment system
         `
     },
 
     {
-        version: '0.2.0',
+        version: '0.1.0',
         date: '2025-12-27',
         content: `
         + Added wishlist page @david
         + Fixed mobile bugs
         + Added discover page! 
         `
-    },
-    {
-        version: '0.2.0',
-        date: '2025-12-26',
-        content: `
-        * Preparing for alfa release @David
-
-        `
-    },
-    {
-        version: '0.1.0',
-        date: '2025-12-25',
-        content: `
-        + Added changelog page @davidlukes
-        * Future: Add Discord and Roblox signup`
-    },
+    },    
     {
         version: '0.0.0',
         date: '2025-12-25',

@@ -8,6 +8,7 @@ import { ShoppingCartIcon } from '@/components/ShoppingCartIcon'
 import Link from 'next/link'
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { scheduleDeletion, cancelDeletion } from '@/app/(main)/dashboard/seller/listings/actions'
+import { claimFreeAsset } from '../actions'
 import { DeleteListingButton } from '@/components/DeleteListingButton'
 
 import { WishlistButton } from '@/components/WishlistButton'
@@ -254,43 +255,60 @@ export default async function AssetDetailPage({
                                         Discontinued
                                     </button>
                                 ) : (
-                                    <form action="/api/checkout" method="POST" className="relative z-10">
-                                        <input type="hidden" name="listingId" value={asset.id} />
-                                        <button
-                                            type="submit"
-                                            className="w-full py-4 bg-gradient-to-r from-white to-neutral-200 hover:from-neutral-100 hover:to-neutral-300 text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
-                                        >
-                                            Buy Now
-                                        </button>
+                                    asset.price_cents === 0 ? (
+                                        <form action={async () => {
+                                            'use server'
+                                            await claimFreeAsset(asset.id)
+                                        }}>
+                                            <button
+                                                type="submit"
+                                                className="w-full py-4 bg-white text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
+                                            >
+                                                Get for Free
+                                            </button>
+                                            <p className="text-center text-xs text-neutral-400 mt-4">
+                                                Instant addition to your library
+                                            </p>
+                                        </form>
+                                    ) : (
+                                        <form action="/api/checkout" method="POST" className="relative z-10">
+                                            <input type="hidden" name="listingId" value={asset.id} />
+                                            <button
+                                                type="submit"
+                                                className="w-full py-4 bg-gradient-to-r from-white to-neutral-200 hover:from-neutral-100 hover:to-neutral-300 text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
+                                            >
+                                                Buy Now
+                                            </button>
 
 
-                                        <div className="mt-6 space-y-4">
-                                            <div className="flex items-center justify-center gap-2 text-sm text-neutral-400">
-                                                <img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
-                                                    alt="Stripe"
-                                                    className="h-6 opacity-90 hover:opacity-100 transition-opacity"
-                                                    style={{ filter: 'brightness(0) invert(1)' }}
-                                                />
-                                                <span className="translate-y-[1px]">Secure payment via Stripe</span>
+                                            <div className="mt-6 space-y-4">
+                                                <div className="flex items-center justify-center gap-2 text-sm text-neutral-400">
+                                                    <img
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                                                        alt="Stripe"
+                                                        className="h-6 opacity-90 hover:opacity-100 transition-opacity"
+                                                        style={{ filter: 'brightness(0) invert(1)' }}
+                                                    />
+                                                    <span className="translate-y-[1px]">Secure payment via Stripe</span>
+                                                </div>
+
+                                                <div className="flex justify-center gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <ShieldCheck className="w-3.5 h-3.5" />
+                                                        <span>Encrypted</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Download className="w-3.5 h-3.5" />
+                                                        <span>Instant Delivery</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Tag className="w-3.5 h-3.5" />
+                                                        <span>Verified Asset</span>
+                                                    </div>
+                                                </div>
                                             </div>
-
-                                            <div className="flex justify-center gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
-                                                <div className="flex items-center gap-1.5">
-                                                    <ShieldCheck className="w-3.5 h-3.5" />
-                                                    <span>Encrypted</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <Download className="w-3.5 h-3.5" />
-                                                    <span>Instant Delivery</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <Tag className="w-3.5 h-3.5" />
-                                                    <span>Verified Asset</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    )
                                 )
                             )}
 
