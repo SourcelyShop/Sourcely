@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { Tooltip } from '@/components/ui/tooltip'
 
 const PARTNERS = [
-    { name: "Roblox", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", link: "https://roblox.com" },
-    { name: "Unity", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Unity_2021.svg", link: "https://unity.com" },
-    { name: "Unreal Engine", logo: "https://upload.wikimedia.org/wikipedia/commons/2/20/UE_Logo_Black_Centered.svg", link: "https://unrealengine.com" },
-    { name: "Blender", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg", link: "https://blender.org" },
-    { name: "Adobe", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.png", link: "https://adobe.com" },
-    { name: "Figma", logo: "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg", link: "https://figma.com" },
+    // { name: "Roblox", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", link: "https://roblox.com" },
+    // { name: "Unity", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Unity_2021.svg", link: "https://unity.com" },
+    // { name: "Unreal Engine", logo: "https://upload.wikimedia.org/wikipedia/commons/2/20/UE_Logo_Black_Centered.svg", link: "https://unrealengine.com" },
+    // { name: "Blender", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg", link: "https://blender.org" },
+    // { name: "Adobe", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.png", link: "https://adobe.com" },
+    // { name: "Figma", logo: "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg", link: "https://figma.com" },
 ]
 
 export default function PartnersPage() {
@@ -23,7 +23,7 @@ export default function PartnersPage() {
                         Our <span className="text-primary">Partners</span>
                     </h1>
                     <p className="text-xl text-neutral-400 max-w-2xl mx-auto mb-12">
-                        We collaborate with industry leaders to bring you the best tools and resources for your development journey.
+                        We collaborate with different communities and creators to bring you the best resources for your development journey.
                     </p>
 
                     <div className="flex justify-center gap-4">
@@ -61,7 +61,7 @@ export default function PartnersPage() {
                             Join our partner program and get access to exclusive resources, early access features, and community support.
                         </p>
                         <Link
-                            href="mailto:partners@sourcely.app"
+                            href="/support?subject=Partnership"
                             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
                         >
                             Contact Partnership Team

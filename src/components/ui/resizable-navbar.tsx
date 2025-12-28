@@ -241,9 +241,11 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <a
+    <motion.a
       href="/"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      whileHover={{ scale: 1.05, rotate: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 10 }}
     >
       <img
         src="/logo.png"
@@ -252,7 +254,7 @@ export const NavbarLogo = () => {
         height={30}
       />
       <span className="text-1xl md:text-1xl bg-clip-text font-bold text-black text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight">Sourcely</span>
-    </a>
+    </motion.a>
   );
 };
 
