@@ -12,14 +12,20 @@ import { AuthLayout, LabelInputContainer, BottomGradient } from "@/components/ui
 export default function LoginPage() {
     const searchParams = useSearchParams()
     const error = searchParams.get('error')
+    const message = searchParams.get('message')
     const shownErrorRef = useRef<string | null>(null)
+    const shownMessageRef = useRef<string | null>(null)
 
     useEffect(() => {
         if (error && shownErrorRef.current !== error) {
             toast.error(error)
             shownErrorRef.current = error
         }
-    }, [error])
+        if (message === 'check_email' && shownMessageRef.current !== message) {
+            toast.success('Account created! Please check your email to verify your account.')
+            shownMessageRef.current = message
+        }
+    }, [error, message])
 
     return (
         <AuthLayout title="Welcome Back" subtitle="Sign in to your account to continue">

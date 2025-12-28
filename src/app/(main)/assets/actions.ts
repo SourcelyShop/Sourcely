@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -41,15 +41,17 @@ export async function claimFreeAsset(assetId: string) {
     }
 
     // Create "order" for free item
-    const { error: orderError } = await supabase
+    const supabaseAdmin = await createAdminClient()
+    const { error: orderError } = await supabaseAdmin
         .from('orders')
         .insert({
             buyer_id: user.id,
             listing_id: assetId,
             seller_id: asset.seller_id,
-            amount_cents: 0,
+            amount_paid_cents: 0,
+            commission_cents: 0,
             status: 'complete',
-            stripe_payment_intent_id: 'free_claim',
+            stripe_charge_id: 'free_claim',
         })
 
     if (orderError) {

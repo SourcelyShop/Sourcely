@@ -75,6 +75,11 @@ export default async function HomePage({
     isWishlisted: wishlistedAssetIds.has(asset.id)
   }))
 
+  // Sort by upvotes for "Trending"
+  if (assets) {
+    assets.sort((a, b) => (b.stats?.upvotes || 0) - (a.stats?.upvotes || 0))
+  }
+
   return (
 
     <div className="relative min-h-screen w-full">
@@ -140,7 +145,7 @@ export default async function HomePage({
         {/* Grid Section */}
         <div className="max-w-7xl mx-auto px-4 py-12 pb-32 w-full">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-white/90 drop-shadow-md">Featured Assets</h2>
+            <h2 className="text-2xl font-bold text-white/90 drop-shadow-md">Trending Assets</h2>
           </div>
 
           {assets && assets.length > 0 ? (

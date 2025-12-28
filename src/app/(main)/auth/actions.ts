@@ -60,7 +60,7 @@ export async function signup(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/')
+    redirect('/login?message=check_email')
 }
 
 export async function signout() {

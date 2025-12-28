@@ -119,6 +119,7 @@ export default function AdminSupportPage() {
                                 { label: 'Feature Request', value: 'Feature Request' },
                                 { label: 'Account Issue', value: 'Account Issue' },
                                 { label: 'Billing', value: 'Billing' },
+                                { label: 'Partnership', value: 'Partnership' },
                                 { label: 'Other', value: 'Other' }
                             ]}
                             className="min-w-[160px]"

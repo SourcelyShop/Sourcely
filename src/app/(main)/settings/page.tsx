@@ -4,6 +4,7 @@ import { DeleteAccountSection } from '@/components/DeleteAccountSection'
 import { SubscriptionSettings } from '@/components/SubscriptionSettings'
 import { ProfileCustomization } from '@/components/ProfileCustomization'
 import { SocialAccountsSettings } from '@/components/SocialAccountsSettings'
+import { PreferencesSettings } from '@/components/PreferencesSettings'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -16,15 +17,16 @@ export default async function SettingsPage() {
     // Fetch user subscription details and profile theme
     const { data: userDetails } = await supabase
         .from('users')
-        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible')
+        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible, show_new_version_popup')
         .eq('id', user.id)
         .single()
 
     return (
-        <div className="min-h-screen bg-background py-24 px-4">
-            <div className="max-w-2xl mx-auto">
+        <div className="min-h-screen bg-background py-24 px-8">
+            <div className="max-w-3xl mx-auto">
                 <FadeIn>
-                    <h1 className="text-3xl font-bold text-white mb-8">Settings</h1>
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl pb-2">Settings</h1>
+
                 </FadeIn>
 
                 <StaggerContainer className="flex flex-col gap-8">
@@ -35,6 +37,14 @@ export default async function SettingsPage() {
                                 roblox_handle: userDetails?.roblox_handle,
                                 discord_visible: userDetails?.discord_visible,
                                 roblox_visible: userDetails?.roblox_visible,
+                            }}
+                        />
+                    </StaggerItem>
+
+                    <StaggerItem>
+                        <PreferencesSettings
+                            initialData={{
+                                show_new_version_popup: userDetails?.show_new_version_popup ?? true
                             }}
                         />
                     </StaggerItem>

@@ -24,8 +24,8 @@ export default function PartnersPage() {
             {/* Hero Section */}
             <BackgroundLines className="flex flex-col items-center justify-center w-full flex-1 px-4 py-20">
                 <div className="max-w-7xl mx-auto relative z-10 text-center">
-                    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
-                        Our <span className="text-primary">Partners</span>
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl text-center pb-2">
+                        Our Partners
                     </h1>
                     <p className="text-xl text-neutral-400 max-w-2xl mx-auto mb-12">
                         We collaborate with different communities and creators to bring you the best resources for your development journey.

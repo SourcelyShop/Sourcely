@@ -7,17 +7,23 @@ import Link from 'next/link';
 import { LATEST_VERSION } from '@/lib/changelog';
 import { SparklesIcon } from '@/components/SparklesIcon';
 
-export function NewVersionPopup() {
+interface NewVersionPopupProps {
+    enabled?: boolean;
+}
+
+export function NewVersionPopup({ enabled = true }: NewVersionPopupProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        if (!enabled) return;
+
         const lastSeenVersion = localStorage.getItem('last_seen_version');
         if (lastSeenVersion !== LATEST_VERSION) {
             // Delay slightly to not overwhelm user on load
             const timer = setTimeout(() => setIsVisible(true), 1500);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [enabled]);
 
     const handleDismiss = () => {
         setIsVisible(false);

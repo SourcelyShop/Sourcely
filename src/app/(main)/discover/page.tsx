@@ -39,9 +39,9 @@ export default async function DiscoverPage({
     }
 
     if (price === 'free') {
-        dbQuery = dbQuery.eq('price', 0)
+        dbQuery = dbQuery.eq('price_cents', 0)
     } else if (price === 'paid') {
-        dbQuery = dbQuery.gt('price', 0)
+        dbQuery = dbQuery.gt('price_cents', 0)
     }
 
     // Apply Sort
@@ -53,10 +53,10 @@ export default async function DiscoverPage({
             dbQuery = dbQuery.order('created_at', { ascending: false })
             break;
         case 'price_asc':
-            dbQuery = dbQuery.order('price', { ascending: true })
+            dbQuery = dbQuery.order('price_cents', { ascending: true })
             break;
         case 'price_desc':
-            dbQuery = dbQuery.order('price', { ascending: false })
+            dbQuery = dbQuery.order('price_cents', { ascending: false })
             break;
         case 'newest':
         default:
