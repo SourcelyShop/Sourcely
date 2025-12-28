@@ -9,7 +9,7 @@ export function BecomePartnerLink() {
 
     return (
         <Link
-            href="/contact"
+            href="/support?subject=Partnership"
             className="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors flex items-center gap-2"
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}

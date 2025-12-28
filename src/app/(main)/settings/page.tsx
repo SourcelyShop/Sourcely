@@ -3,6 +3,7 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/animation
 import { DeleteAccountSection } from '@/components/DeleteAccountSection'
 import { SubscriptionSettings } from '@/components/SubscriptionSettings'
 import { ProfileCustomization } from '@/components/ProfileCustomization'
+import { SocialAccountsSettings } from '@/components/SocialAccountsSettings'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -15,7 +16,7 @@ export default async function SettingsPage() {
     // Fetch user subscription details and profile theme
     const { data: userDetails } = await supabase
         .from('users')
-        .select('is_premium, stripe_subscription_id, profile_theme')
+        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible')
         .eq('id', user.id)
         .single()
 
@@ -28,12 +29,14 @@ export default async function SettingsPage() {
 
                 <StaggerContainer className="flex flex-col gap-8">
                     <StaggerItem>
-                        <div className="glass-card p-8 rounded-xl border border-white/10">
-                            <h2 className="text-xl font-bold text-white mb-4">General</h2>
-                            <p className="text-neutral-400">
-                                More settings coming soon.
-                            </p>
-                        </div>
+                        <SocialAccountsSettings
+                            initialData={{
+                                discord_handle: userDetails?.discord_handle,
+                                roblox_handle: userDetails?.roblox_handle,
+                                discord_visible: userDetails?.discord_visible,
+                                roblox_visible: userDetails?.roblox_visible,
+                            }}
+                        />
                     </StaggerItem>
 
                     <StaggerItem>

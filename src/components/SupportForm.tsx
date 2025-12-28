@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useFormStatus } from 'react-dom'
 import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 
 function SubmitButton() {
     const { pending } = useFormStatus()
@@ -32,10 +33,11 @@ import { Dropdown } from '@/components/ui/dropdown'
 // ...
 
 export function SupportForm() {
+    const searchParams = useSearchParams()
     const [success, setSuccess] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [showConfirm, setShowConfirm] = useState(false)
-    const [subject, setSubject] = useState('')
+    const [subject, setSubject] = useState(searchParams.get('subject') || '')
 
     async function clientAction(formData: FormData) {
         setError(null)
@@ -97,6 +99,7 @@ export function SupportForm() {
                         { label: 'Feature Request', value: 'Feature Request' },
                         { label: 'Account Issue', value: 'Account Issue' },
                         { label: 'Billing', value: 'Billing' },
+                        { label: 'Partnership', value: 'Partnership' },
                         { label: 'Other', value: 'Other' }
                     ]}
                 />

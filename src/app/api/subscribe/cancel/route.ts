@@ -22,27 +22,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No active subscription found' }, { status: 400 })
         }
 
-        // Cancel Subscription in Stripe
-        await stripe.subscriptions.cancel(userDetails.stripe_subscription_id)
+        // Cancel Subscription in Stripe (at period end)
+        await stripe.subscriptions.update(userDetails.stripe_subscription_id, {
+            cancel_at_period_end: true
+        })
 
-        // Update User in Database
-        const supabaseAdmin = await createAdminClient()
-        const { error } = await supabaseAdmin
-            .from('users')
-            .update({
-                is_premium: false,
-                stripe_subscription_id: null,
-                stripe_customer_id: null,
-                profile_theme: { backgroundColor: 'default' }
-            })
-            .eq('id', user.id)
+        // We do NOT revoke access immediately. 
+        // The webhook will handle revoking access when the subscription actually expires.
 
-        if (error) {
-            console.error('Error updating user status:', error)
-            return NextResponse.json({ error: 'Failed to update user status' }, { status: 500 })
-        }
-
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true, message: 'Subscription will be canceled at the end of the billing period.' })
     } catch (err: any) {
         console.error('Stripe Cancellation Error:', err)
         return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 })
