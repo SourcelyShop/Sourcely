@@ -1,6 +1,6 @@
 export const CHANGELOG_DATA = [
     {
-        version: '1.0.0',
+        version: '1.1.0',
         date: '2025-12-28',
         content: `
         Released to public!
