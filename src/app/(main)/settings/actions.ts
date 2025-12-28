@@ -21,3 +21,32 @@ export async function deleteAccount() {
 
     redirect('/')
 }
+
+export async function updateSocialAccounts(data: {
+    discord_handle: string
+    roblox_handle: string
+    discord_visible: boolean
+    roblox_visible: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        throw new Error('Not authenticated')
+    }
+
+    const { error } = await supabase
+        .from('users')
+        .update({
+            discord_handle: data.discord_handle,
+            roblox_handle: data.roblox_handle,
+            discord_visible: data.discord_visible,
+            roblox_visible: data.roblox_visible,
+        })
+        .eq('id', user.id)
+
+    if (error) {
+        console.error('Error updating social accounts:', error)
+        throw new Error(error.message)
+    }
+}

@@ -5,6 +5,11 @@ import Link from 'next/link'
 import { Tooltip } from '@/components/ui/tooltip'
 
 const PARTNERS = [
+    {
+        name: "Your name",
+        logo: "https://placehold.co/64x64",
+        link: ""
+    },
     // { name: "Roblox", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", link: "https://roblox.com" },
     // { name: "Unity", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Unity_2021.svg", link: "https://unity.com" },
     // { name: "Unreal Engine", logo: "https://upload.wikimedia.org/wikipedia/commons/2/20/UE_Logo_Black_Centered.svg", link: "https://unrealengine.com" },
