@@ -17,7 +17,7 @@ const RobloxIcon = ({ className }: { className?: string }) => (
         className={className}
         xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M5.438 0L0 18.562L18.562 24L24 5.438L5.438 0ZM16.03 12.984L12.984 16.03L7.97 11.016L11.016 7.97L16.03 12.984Z" />
+        <path d="M5.325 0L0 18.225l18.675 5.775L24 5.775 5.325 0zm10.744 13.225l-3.175 3.175-5.175-5.175 3.175-3.175 5.175 5.175z" />
     </svg>
 )
 

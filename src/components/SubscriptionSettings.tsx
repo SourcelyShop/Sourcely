@@ -44,8 +44,8 @@ export function SubscriptionSettings({ isPremium, subscriptionId }: Subscription
         <>
             <div className="glass-card p-8 rounded-xl border border-white/10 mb-8">
                 <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-white/10 border border-white/20">
-                        <CreditCard className="w-6 h-6 text-white" />
+                    <div className="p-3 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+                        <CreditCard className="w-6 h-6 text-yellow-500" />
                     </div>
                     <div className="flex-1">
                         <h3 className="text-xl font-bold text-white mb-2">Subscription</h3>
