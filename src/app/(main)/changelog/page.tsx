@@ -14,6 +14,13 @@ import { Tooltip } from '@/components/ui/tooltip';
 
 const CHANGELOG_DATA = [
     {
+        version: '1.0.0',
+        date: '2025-12-27',
+        content: `
+        RELEASE!
+        `
+    },
+    {
         version: '0.2.0',
         date: '2025-12-27',
         content: `
