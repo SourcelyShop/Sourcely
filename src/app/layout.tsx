@@ -10,8 +10,35 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sourcely",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://sourcely.shop'),
+  title: {
+    default: "Sourcely",
+    template: "%s | Sourcely"
+  },
   description: "The Roblox Developer Marketplace",
+  openGraph: {
+    title: "Sourcely",
+    description: "The Roblox Developer Marketplace",
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://sourcely.shop',
+    siteName: 'Sourcely',
+    locale: 'en_US',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  twitter: {
+    title: "Sourcely",
+    card: "summary_large_image",
+  },
 };
 
 import { createClient } from '@/utils/supabase/server'

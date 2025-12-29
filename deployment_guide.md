@@ -35,7 +35,7 @@ Your ISIC card is your key to free hosting credits and tools.
         *   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Your **Live** Stripe Key (starts with `pk_live_...`).
         *   `STRIPE_SECRET_KEY`: Your **Live** Stripe Secret Key (starts with `sk_live_...`).
         *   `STRIPE_WEBHOOK_SECRET`: You will get this in Step 4.
-        *   `NEXT_PUBLIC_BASE_URL`: `https://your-domain.com` (e.g., `https://sourcely.app`).
+        *   `NEXT_PUBLIC_BASE_URL`: `https://sourcely.shop` (e.g., `https://sourcely.shop`).
 
 ## 🗄️ Step 3: Database (Supabase)
 
@@ -50,8 +50,8 @@ For production, it is highly recommended to create a **new, separate Supabase pr
     *   Go to **Authentication** -> **Providers**.
     *   Enable **Email/Password** and **Google** (if used).
     *   **IMPORTANT**: Update the **Site URL** and **Redirect URLs** in Supabase Auth settings to your production domain:
-        *   Site URL: `https://your-domain.com`
-        *   Redirect URLs: `https://your-domain.com/**`
+        *   Site URL: `https://sourcely.shop`
+        *   Redirect URLs: `https://sourcely.shop/**`
 
 ## 💳 Step 4: Payments (Stripe)
 
@@ -61,7 +61,7 @@ For production, it is highly recommended to create a **new, separate Supabase pr
 2.  **Create Webhook**:
     *   Go to **Developers** -> **Webhooks**.
     *   Click **"Add endpoint"**.
-    *   **Endpoint URL**: `https://your-domain.com/api/webhooks/stripe`
+    *   **Endpoint URL**: `https://sourcely.shop/api/webhooks/stripe`
     *   **Events to listen for**:
         *   `checkout.session.completed`
         *   `customer.subscription.created`
@@ -77,7 +77,7 @@ Since you already bought a domain:
 
 1.  **In Vercel**:
     *   Go to **Settings** -> **Domains**.
-    *   Enter your domain (e.g., `sourcely.app`) and click **Add**.
+    *   Enter your domain (e.g., `sourcely.shop`) and click **Add**.
     *   Vercel will give you DNS records (A Record and CNAME).
 2.  **In Your Domain Registrar** (where you bought the domain):
     *   Find the **DNS Settings** or **Name Server** settings.
