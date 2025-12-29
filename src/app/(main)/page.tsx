@@ -75,6 +75,11 @@ export default async function HomePage({
     isWishlisted: wishlistedAssetIds.has(asset.id)
   }))
 
+  // Sort by upvotes for "Trending"
+  if (assets) {
+    assets.sort((a, b) => (b.stats?.upvotes || 0) - (a.stats?.upvotes || 0))
+  }
+
   return (
 
     <div className="relative min-h-screen w-full">
@@ -95,9 +100,7 @@ export default async function HomePage({
             {/* <div className=" flex items-center justify-center">
               <TextHoverEffect text="Sourcely" />
             </div> */}
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl">
-              Sourcely
-            </h1>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl pb-2">Sourcely</h1>
             <HeroText />
 
             {/* Search Bar */}
@@ -140,7 +143,7 @@ export default async function HomePage({
         {/* Grid Section */}
         <div className="max-w-7xl mx-auto px-4 py-12 pb-32 w-full">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-white/90 drop-shadow-md">Featured Assets</h2>
+            <h2 className="text-2xl font-bold text-white/90 drop-shadow-md">Trending Assets</h2>
           </div>
 
           {assets && assets.length > 0 ? (

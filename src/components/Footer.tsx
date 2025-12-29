@@ -35,7 +35,7 @@ export function Footer() {
                         <h4 className="font-medium text-white">Support</h4>
                         <Link href="#" className="hover:text-white transition-colors">Documentation</Link>
                         <Link href="#" className="hover:text-white transition-colors">Help Center</Link>
-                        <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                        <Link href="/support" className="hover:text-white transition-colors">Contact</Link>
                     </div>
                     <div className="flex flex-col gap-3">
                         <h4 className="font-medium text-white">Legal</h4>
