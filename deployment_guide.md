@@ -99,4 +99,20 @@ Since you already bought a domain:
 *   **Namecheap**: If you need more domains, use the free .me offer.
 *   **Vercel Analytics**: Enable "Web Vitals" in Vercel to track your site's performance for free.
 
+## 🔧 Troubleshooting
+
+### Google Search Console "Redirect Error"
+If you see a "Redirect error" or "Multiple redirects" in Google Search Console, it is likely because your **Canonical URL** does not match your **Vercel Domain Settings**.
+
+1.  **Check Vercel Domain Settings**:
+    *   Go to Vercel -> Settings -> Domains.
+    *   Check if you are redirecting to `www.sourcely.shop` or `sourcely.shop`.
+2.  **Update Environment Variable**:
+    *   Go to Vercel -> Settings -> Environment Variables.
+    *   Update `NEXT_PUBLIC_BASE_URL` to match your **final** domain exactly.
+    *   *Example*: If Vercel redirects to `www`, set `NEXT_PUBLIC_BASE_URL` to `https://www.sourcely.shop`.
+    *   *Example*: If Vercel redirects to non-www, set `NEXT_PUBLIC_BASE_URL` to `https://sourcely.shop`.
+3.  **Redeploy**:
+    *   Go to Deployments and redeploy for the changes to take effect.
+
 **Good luck with the launch of Sourcely! 🚀**
