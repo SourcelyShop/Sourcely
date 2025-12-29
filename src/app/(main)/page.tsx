@@ -36,7 +36,8 @@ export default async function HomePage({
     .from('asset_listings')
     .select(`
       *,
-      seller:users(name, is_premium)
+      seller:users(name, is_premium),
+      boost_expires_at
     `)
     .is('deletion_scheduled_at', null)
     .order('created_at', { ascending: false })
@@ -75,9 +76,26 @@ export default async function HomePage({
     isWishlisted: wishlistedAssetIds.has(asset.id)
   }))
 
-  // Sort by upvotes for "Trending"
+  // Sort by Boosted > Premium Seller > Trending (Upvotes)
   if (assets) {
-    assets.sort((a, b) => (b.stats?.upvotes || 0) - (a.stats?.upvotes || 0))
+    assets.sort((a, b) => {
+      const now = new Date().getTime()
+      const aBoosted = a.boost_expires_at && new Date(a.boost_expires_at).getTime() > now
+      const bBoosted = b.boost_expires_at && new Date(b.boost_expires_at).getTime() > now
+
+      // 1. Boosted items first
+      if (aBoosted && !bBoosted) return -1
+      if (!aBoosted && bBoosted) return 1
+
+      // 2. Premium sellers next
+      const aPremium = a.seller?.is_premium
+      const bPremium = b.seller?.is_premium
+      if (aPremium && !bPremium) return -1
+      if (!aPremium && bPremium) return 1
+
+      // 3. Then by upvotes (Trending)
+      return (b.stats?.upvotes || 0) - (a.stats?.upvotes || 0)
+    })
   }
 
   return (

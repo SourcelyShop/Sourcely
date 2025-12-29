@@ -1,11 +1,12 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, DollarSign, Package } from 'lucide-react'
+import { Plus, DollarSign, Package, Rocket } from 'lucide-react'
 import { AssetCard } from '@/components/AssetCard'
 import { stripe } from '@/utils/stripe/server'
 import { getAssetStats } from '@/utils/getAssetStats'
 import { StripeOnboardingHandler } from '@/components/StripeOnboardingHandler'
+import { BoostButton } from '@/components/BoostButton'
 
 export default async function SellerDashboard() {
     const supabase = await createClient()
@@ -15,9 +16,34 @@ export default async function SellerDashboard() {
 
     const { data: userData } = await supabase
         .from('users')
-        .select('stripe_account_id')
+        .select('stripe_account_id, is_premium, boost_credits, last_boost_refresh_at')
         .eq('id', user.id)
         .single()
+
+    // Handle Boost Refresh
+    let boostCredits = userData?.boost_credits || 0
+    if (userData?.is_premium) {
+        const lastRefresh = userData.last_boost_refresh_at ? new Date(userData.last_boost_refresh_at) : null
+        const now = new Date()
+        const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1))
+
+        if (!lastRefresh || lastRefresh < oneMonthAgo) {
+            // Refresh credits (Grant 1 credit)
+            // We update the DB, but for this render we just show the new value
+            // Ideally this should be a separate mutation or triggered by a cron, but lazy eval works here
+            const { error } = await supabase
+                .from('users')
+                .update({
+                    boost_credits: (userData.boost_credits || 0) + 1,
+                    last_boost_refresh_at: new Date().toISOString()
+                })
+                .eq('id', user.id)
+
+            if (!error) {
+                boostCredits = (userData.boost_credits || 0) + 1
+            }
+        }
+    }
 
     let isStripeConnected = false
     if (userData?.stripe_account_id) {
@@ -34,9 +60,8 @@ export default async function SellerDashboard() {
         .from('asset_listings')
         .select(`
             *,
-            seller:users(name)
+            seller:users(name, is_premium)
         `)
-        .eq('seller_id', user.id)
         .eq('seller_id', user.id)
         .order('created_at', { ascending: false })
 
@@ -56,8 +81,6 @@ export default async function SellerDashboard() {
             const balance = await stripe.balance.retrieve({
                 stripeAccount: userData.stripe_account_id
             })
-            // Sum available and pending balances from all currencies (assuming USD/single currency for now or just summing raw numbers)
-            // Typically balance.available is an array.
             const available = balance.available.reduce((acc, curr) => acc + curr.amount, 0)
             const pending = balance.pending.reduce((acc, curr) => acc + curr.amount, 0)
             totalEarningsCents = available + pending
@@ -84,7 +107,7 @@ export default async function SellerDashboard() {
                     </Link>
                 </header>
 
-                {!isStripeConnected ? (
+                {!isStripeConnected && (
                     <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-8 flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-semibold text-yellow-500">Payment Setup Required</h3>
@@ -97,33 +120,46 @@ export default async function SellerDashboard() {
                             Connect Stripe
                         </a>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 ">
-                        <div className="glass-card p-6 rounded-xl  border border-white/10 ">
-                            <div className="flex items-center gap-4 mb-4 ">
-                                <div className="p-3 bg-green-500/10 rounded-lg">
-                                    <DollarSign className="w-6 h-6 text-green-500" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground text-white">Total Earnings</p>
-                                    <h3 className="text-2xl font-bold text-white">${(totalEarningsCents / 100).toFixed(2)}</h3>
-                                </div>
-                            </div>
-                        </div>
+                )}
 
-                        <div className="glass-card p-6 rounded-xl border border-white/10">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-blue-500/10 rounded-lg">
-                                    <Package className="w-6 h-6 text-blue-500 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground text-white">Active Listings</p>
-                                    <h3 className="text-2xl font-bold text-white">{listings?.length || 0}</h3>
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 ">
+                    <div className="glass-card p-6 rounded-xl  border border-white/10 ">
+                        <div className="flex items-center gap-4 mb-4 ">
+                            <div className="p-3 bg-green-500/10 rounded-lg">
+                                <DollarSign className="w-6 h-6 text-green-500" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground text-white">Total Earnings</p>
+                                <h3 className="text-2xl font-bold text-white">${(totalEarningsCents / 100).toFixed(2)}</h3>
                             </div>
                         </div>
                     </div>
-                )}
+
+                    <div className="glass-card p-6 rounded-xl border border-white/10">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-blue-500/10 rounded-lg">
+                                <Package className="w-6 h-6 text-blue-500 text-white" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground text-white">Active Listings</p>
+                                <h3 className="text-2xl font-bold text-white">{listings?.length || 0}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Boost Credits Card */}
+                    <div className="glass-card p-6 rounded-xl border border-white/10">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-purple-500/10 rounded-lg">
+                                <Rocket className="w-6 h-6 text-purple-500" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground text-white">Boost Credits</p>
+                                <h3 className="text-2xl font-bold text-white">{boostCredits}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="space-y-6">
                     <h3 className="text-xl font-semibold text-white">Your Listings</h3>
@@ -131,7 +167,17 @@ export default async function SellerDashboard() {
                     {listingsWithStats && listingsWithStats.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {listingsWithStats.map((listing) => (
-                                <AssetCard key={listing.id} asset={listing} />
+                                <div key={listing.id} className="flex flex-col gap-2">
+                                    <AssetCard asset={listing} />
+                                    <div className="flex justify-end">
+                                        <BoostButton
+                                            assetId={listing.id}
+                                            hasCredits={boostCredits > 0}
+                                            isBoosted={!!listing.boost_expires_at && new Date(listing.boost_expires_at) > new Date()}
+                                            boostExpiresAt={listing.boost_expires_at}
+                                        />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     ) : (

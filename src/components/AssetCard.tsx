@@ -19,14 +19,31 @@ interface AssetListing {
         downvotes: number
     }
     isWishlisted?: boolean
+    boost_expires_at?: string | null
 }
 
-import { ShoppingCart, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { ShoppingCart, ThumbsUp, ThumbsDown, Rocket } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export function AssetCard({ asset }: { asset: AssetListing }) {
+    const isBoosted = asset.boost_expires_at && new Date(asset.boost_expires_at) > new Date()
+
     return (
         <Link href={`/assets/${asset.id}`} className="group block relative">
-            <div className="glass-card rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 h-full flex flex-col bg-black/20 backdrop-blur-md">
+            <div className={cn(
+                "glass-card rounded-xl overflow-hidden border transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl h-full flex flex-col bg-black/20 backdrop-blur-md relative",
+                isBoosted
+                    ? "border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.1)] hover:border-amber-400 hover:shadow-[0_0_25px_rgba(251,191,36,0.2)]"
+                    : "border-white/10 hover:border-primary/50 hover:shadow-primary/10"
+            )}>
+                {/* Boosted Badge */}
+                {isBoosted && (
+                    <div className="absolute top-3 left-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg">
+                        <Rocket className="w-3 h-3 fill-black" />
+                        BOOSTED
+                    </div>
+                )}
+
                 {/* Image Area */}
                 <div className="aspect-video bg-neutral-900/50 relative overflow-hidden group-hover:brightness-110 transition-all">
                     {asset.image_url ? (
@@ -87,7 +104,10 @@ export function AssetCard({ asset }: { asset: AssetListing }) {
                         <span className="font-bold text-xl text-white tracking-tight">
                             {asset.price_cents === 0 ? 'Free' : `$${(asset.price_cents / 100).toFixed(2)}`}
                         </span>
-                        <span className="text-xs font-semibold bg-white text-black px-3 py-1.5 rounded-full transition-transform group-hover:scale-105">
+                        <span className={cn(
+                            "text-xs font-semibold px-3 py-1.5 rounded-full transition-transform group-hover:scale-105",
+                            isBoosted ? "bg-amber-400 text-black" : "bg-white text-black"
+                        )}>
                             Buy Now
                         </span>
                     </div>

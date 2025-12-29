@@ -1,4 +1,14 @@
 export const CHANGELOG_DATA = [
+
+    {
+        version: '1.1.4',
+        date: '2025-12-29',
+        content: `
+        + Added new boost feature for premium users
+        + Added more customization features for premium users
+        + Added boost credit to make your assets more visible
+        `
+    },
     {
         version: '1.1.0',
         date: '2025-12-28',
