@@ -100,9 +100,7 @@ export default async function HomePage({
             {/* <div className=" flex items-center justify-center">
               <TextHoverEffect text="Sourcely" />
             </div> */}
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl">
-              Sourcely
-            </h1>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight drop-shadow-2xl pb-2">Sourcely</h1>
             <HeroText />
 
             {/* Search Bar */}
