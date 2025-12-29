@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://sourcely.shop'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop'),
   title: {
     default: "Sourcely",
     template: "%s | Sourcely"
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sourcely",
     description: "The Roblox Developer Marketplace",
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://sourcely.shop',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop',
     siteName: 'Sourcely',
     locale: 'en_US',
     type: 'website',
