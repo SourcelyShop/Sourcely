@@ -28,9 +28,10 @@ interface NavbarProps {
     user: User | null;
     avatarUrl?: string | null;
     is_admin?: boolean;
+    isPremium?: boolean;
 }
 
-export function Navbar({ user, avatarUrl, is_admin }: NavbarProps) {
+export function Navbar({ user, avatarUrl, is_admin, isPremium }: NavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const supabase = createClient()
     const router = useRouter()
@@ -98,7 +99,7 @@ export function Navbar({ user, avatarUrl, is_admin }: NavbarProps) {
                             <NotificationBell userId={user.id} />
                             <div className="relative group">
                                 <button
-                                    className="w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-neutral-800 flex items-center justify-center hover:border-primary/50 transition-colors cursor-pointer focus:outline-none"
+                                    className={`w-10 h-10 rounded-full overflow-hidden border flex items-center justify-center transition-all cursor-pointer focus:outline-none ${isPremium ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]' : 'border-white/20 hover:border-primary/50'} bg-neutral-800`}
                                 >
                                     {avatarUrl ? (
                                         <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -124,7 +125,7 @@ export function Navbar({ user, avatarUrl, is_admin }: NavbarProps) {
                                             My Library
                                         </Link>
                                         <Link
-                                            href= "/dashboard/saved"
+                                            href="/dashboard/saved"
                                             className="block px-4 py-2 text-sm text-neutral-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors"
                                         >
                                             Wishlist

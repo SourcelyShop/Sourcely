@@ -13,6 +13,7 @@ import { DeleteListingButton } from '@/components/DeleteListingButton'
 
 import { WishlistButton } from '@/components/WishlistButton'
 import { AssetVoting } from '@/components/AssetVoting'
+import { BoostCountdown } from '@/components/BoostCountdown'
 
 export default async function AssetDetailPage({
     params,
@@ -183,6 +184,9 @@ export default async function AssetDetailPage({
                                 <span className="px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium border border-white/10 backdrop-blur-md">
                                     {asset.category}
                                 </span>
+                                {asset.boost_expires_at && new Date(asset.boost_expires_at) > new Date() && (
+                                    <BoostCountdown expiresAt={asset.boost_expires_at} />
+                                )}
                             </div>
                             <h1 className="text-5xl font-bold mb-2 text-white drop-shadow-lg tracking-tight">{asset.title}</h1>
                             <p className="text-lg text-neutral-300 flex items-center gap-2">

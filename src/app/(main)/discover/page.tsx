@@ -25,7 +25,8 @@ export default async function DiscoverPage({
         .from('asset_listings')
         .select(`
             *,
-            seller:users(name, is_premium)
+            seller:users(name, is_premium),
+            boost_expires_at
         `)
         .is('deletion_scheduled_at', null)
 

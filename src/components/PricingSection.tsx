@@ -10,7 +10,7 @@ const plans = [
         description: "For founders and teams in early stage companies",
         monthlyPrice: 5,
         yearlyPrice: 4,
-        features: ["Profile page Customization",],
+        features: ["Profile page Customization","Custom profile link", "Animated profile banner", "Asset boosting feature"],
         highlight: false, //true
     },
 ];

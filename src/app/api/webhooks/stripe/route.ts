@@ -40,7 +40,9 @@ export async function POST(request: Request) {
                         is_premium: true,
                         stripe_subscription_id: session.subscription as string,
                         stripe_customer_id: session.customer as string,
-                        subscription_interval: interval
+                        subscription_interval: interval,
+                        boost_credits: 1,
+                        last_boost_refresh_at: new Date().toISOString()
                     })
                     .eq('id', metadata.userId)
 
@@ -141,13 +143,34 @@ export async function POST(request: Request) {
                 .update({
                     is_premium: false,
                     stripe_subscription_id: null,
-                    profile_theme: { backgroundColor: 'default' }
+                    profile_theme: { backgroundColor: 'default' },
+                    banner_url: null,
+                    username: null
                 })
                 .eq('stripe_customer_id', subscription.customer as string)
 
             if (error) {
                 console.error('Error resetting user premium status:', error)
                 return NextResponse.json({ error: 'Error resetting user premium status' }, { status: 500 })
+            }
+
+            // Remove boosts from all assets
+            // First get the user ID
+            const { data: user } = await supabaseAdmin
+                .from('users')
+                .select('id')
+                .eq('stripe_customer_id', subscription.customer as string)
+                .single()
+
+            if (user) {
+                const { error: boostError } = await supabaseAdmin
+                    .from('asset_listings')
+                    .update({ boost_expires_at: null })
+                    .eq('seller_id', user.id)
+
+                if (boostError) {
+                    console.error('Error removing boosts:', boostError)
+                }
             }
         }
     }

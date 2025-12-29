@@ -11,9 +11,10 @@ interface AvatarUploadProps {
     userId: string
     currentAvatarUrl: string | null
     editable: boolean
+    isPremium?: boolean
 }
 
-export function AvatarUpload({ userId, currentAvatarUrl, editable }: AvatarUploadProps) {
+export function AvatarUpload({ userId, currentAvatarUrl, editable, isPremium }: AvatarUploadProps) {
     const [uploading, setUploading] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const router = useRouter()
@@ -81,7 +82,7 @@ export function AvatarUpload({ userId, currentAvatarUrl, editable }: AvatarUploa
     return (
         <>
             <div className="relative group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 bg-neutral-800 flex items-center justify-center relative">
+                <div className={`w-24 h-24 rounded-full overflow-hidden border-2 flex items-center justify-center relative ${isPremium ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-white/20'} bg-neutral-800`}>
                     {currentAvatarUrl ? (
                         <Image
                             src={currentAvatarUrl}

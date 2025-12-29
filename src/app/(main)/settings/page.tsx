@@ -17,7 +17,7 @@ export default async function SettingsPage() {
     // Fetch user subscription details and profile theme
     const { data: userDetails } = await supabase
         .from('users')
-        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible, show_new_version_popup')
+        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible, show_new_version_popup, username, banner_url')
         .eq('id', user.id)
         .single()
 
@@ -61,6 +61,8 @@ export default async function SettingsPage() {
                             isPremium={userDetails?.is_premium || false}
                             currentTheme={userDetails?.profile_theme || { backgroundColor: 'default' }}
                             userId={user.id}
+                            initialUsername={userDetails?.username}
+                            initialBannerUrl={userDetails?.banner_url}
                         />
                     </StaggerItem>
 

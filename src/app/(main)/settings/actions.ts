@@ -73,3 +73,28 @@ export async function updatePreferences(data: {
         throw new Error(error.message)
     }
 }
+
+export async function checkUsernameAvailability(username: string) {
+    const supabaseAdmin = await createAdminClient()
+
+    // Check if any user has this username
+    const { data, error } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('username', username)
+        .single() // Returns error if 0 rows (PGRST116) or >1 rows
+
+    if (error && error.code === 'PGRST116') {
+        // No user found with this username -> Available
+        return true
+    }
+
+    if (data) {
+        // User found -> Taken
+        return false
+    }
+
+    // Some other error occurred
+    console.error('Error checking username:', error)
+    return false // Fail safe to "taken" if error
+}

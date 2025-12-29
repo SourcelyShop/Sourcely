@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { Palette, Lock, Upload, Image as ImageIcon, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Palette, Lock, Upload, Image as ImageIcon, X, Link as LinkIcon, MonitorPlay } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { checkUsernameAvailability } from '@/app/(main)/settings/actions'
 
 interface ProfileCustomizationProps {
     isPremium: boolean
@@ -14,6 +15,8 @@ interface ProfileCustomizationProps {
         backgroundImage?: string
     }
     userId: string
+    initialUsername?: string | null
+    initialBannerUrl?: string | null
 }
 
 const BACKGROUND_OPTIONS = [
@@ -28,27 +31,77 @@ const BACKGROUND_OPTIONS = [
     { id: 'white', name: 'white', value: 'bg-white', class: 'bg-white' },
 ]
 
-export function ProfileCustomization({ isPremium, currentTheme, userId }: ProfileCustomizationProps) {
+export function ProfileCustomization({ isPremium, currentTheme, userId, initialUsername, initialBannerUrl }: ProfileCustomizationProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [selectedColor, setSelectedColor] = useState(currentTheme?.backgroundColor || 'default')
+    const [username, setUsername] = useState(initialUsername || '')
+    const [bannerUrl, setBannerUrl] = useState(initialBannerUrl || '')
+    const [usernameStatus, setUsernameStatus] = useState<'idle' | 'loading' | 'valid' | 'invalid' | 'taken'>('idle')
     const router = useRouter()
     const supabase = createClient()
+
+    // Debounce check
+    useEffect(() => {
+        const checkUsername = async () => {
+            if (!username || username === initialUsername) {
+                setUsernameStatus('idle')
+                return
+            }
+
+            // Basic validation
+            if (username.length < 3 || !/^[a-zA-Z0-9_-]+$/.test(username)) {
+                setUsernameStatus('invalid')
+                return
+            }
+
+            const reservedUsernames = ['login', 'dashboard', 'settings', 'admin', 'api', 'auth', 'premium', 'waitlist', 'assets', 'users', 'legal', 'privacy', 'terms']
+            if (reservedUsernames.includes(username.toLowerCase())) {
+                setUsernameStatus('taken')
+                return
+            }
+
+            setUsernameStatus('loading')
+
+            try {
+                const isAvailable = await checkUsernameAvailability(username)
+                setUsernameStatus(isAvailable ? 'valid' : 'taken')
+            } catch (error) {
+                console.error('Error checking username:', error)
+                setUsernameStatus('valid') // Fallback
+            }
+        }
+
+        const timeoutId = setTimeout(checkUsername, 500)
+        return () => clearTimeout(timeoutId)
+    }, [username, initialUsername])
 
     const handleSave = async () => {
         if (!isPremium) return
 
         try {
             setIsLoading(true)
+
+            // Validate username if changed
+            if (username !== initialUsername) {
+                if (username.length < 3) throw new Error('Username must be at least 3 characters')
+                if (!/^[a-zA-Z0-9_-]+$/.test(username)) throw new Error('Username can only contain letters, numbers, underscores and hyphens')
+
+                const reservedUsernames = ['login', 'dashboard', 'settings', 'admin', 'api', 'auth', 'premium', 'waitlist', 'assets', 'users', 'legal', 'privacy', 'terms']
+                if (reservedUsernames.includes(username.toLowerCase())) throw new Error('This username is reserved')
+
+                // Final availability check
+                const isAvailable = await checkUsernameAvailability(username)
+                if (!isAvailable) throw new Error('Username is already taken')
+            }
+
             const { error } = await supabase
                 .from('users')
                 .update({
+                    username: username || null,
+                    banner_url: bannerUrl || null,
                     profile_theme: {
                         ...currentTheme,
                         backgroundColor: selectedColor,
-                        // If selecting a color, we might want to clear the image or keep it? 
-                        // Let's assume selecting a color clears the image if one was set, 
-                        // or we provide a separate way to remove the image.
-                        // For now, let's just update the color.
                         backgroundImage: currentTheme.backgroundImage
                     }
                 })
@@ -56,10 +109,10 @@ export function ProfileCustomization({ isPremium, currentTheme, userId }: Profil
 
             if (error) throw error
 
-            toast.success('Profile theme updated successfully')
+            toast.success('Profile updated successfully')
             router.refresh()
         } catch (error: any) {
-            toast.error(error.message || 'Failed to update profile theme')
+            toast.error(error.message || 'Failed to update profile')
         } finally {
             setIsLoading(false)
         }
@@ -160,10 +213,111 @@ export function ProfileCustomization({ isPremium, currentTheme, userId }: Profil
                         )}
                     </div>
                     <p className="text-neutral-400 mb-6">
-                        Customize the look of your public profile page.
+                        Customize your public profile with a unique URL, banner, and theme.
                     </p>
 
                     <div className="space-y-6">
+                        {/* Custom URL */}
+                        <div>
+                            <label className="text-sm font-medium text-neutral-300 mb-3 flex items-center gap-2">
+                                <LinkIcon className="w-4 h-4" />
+                                Custom Shop URL
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-neutral-500 text-sm">sourcely.shop/</span>
+                                <div className="relative flex-1">
+                                    <input
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="username"
+                                        disabled={!isPremium}
+                                        className={cn(
+                                            "w-full bg-black/20 border rounded-lg px-4 py-2 text-white placeholder:text-neutral-600 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                                            usernameStatus === 'valid' && "border-green-500/50 focus:border-green-500",
+                                            (usernameStatus === 'taken' || usernameStatus === 'invalid') && "border-red-500/50 focus:border-red-500",
+                                            usernameStatus === 'loading' && "border-yellow-500/50 focus:border-yellow-500",
+                                            usernameStatus === 'idle' && "border-white/10 focus:border-purple-500/50"
+                                        )}
+                                    />
+                                    {usernameStatus === 'loading' && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                            <div className="w-4 h-4 border-2 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="min-h-[20px] mt-2">
+                                {usernameStatus === 'taken' && (
+                                    <p className="text-xs text-red-400">Username is already taken.</p>
+                                )}
+                                {usernameStatus === 'invalid' && (
+                                    <p className="text-xs text-red-400">
+                                        {username.length < 3
+                                            ? "Must be at least 3 characters."
+                                            : "Only letters, numbers, underscores, and hyphens."}
+                                    </p>
+                                )}
+                                {usernameStatus === 'valid' && username !== initialUsername && (
+                                    <p className="text-xs text-green-400">Username is available!</p>
+                                )}
+                                {usernameStatus === 'idle' && (
+                                    <p className="text-xs text-neutral-500">
+                                        Only letters, numbers, underscores, and hyphens.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Banner URL */}
+                        <div>
+                            <label className="text-sm font-medium text-neutral-300 mb-3 flex items-center gap-2">
+                                <MonitorPlay className="w-4 h-4" />
+                                Profile Banner URL (GIF/Video)
+                            </label>
+                            <input
+                                type="url"
+                                value={bannerUrl}
+                                onChange={(e) => setBannerUrl(e.target.value)}
+                                placeholder="https://media.giphy.com/media/..."
+                                disabled={!isPremium}
+                                className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white placeholder:text-neutral-600 focus:outline-none focus:border-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <p className="text-xs text-neutral-500 mt-2">
+                                Paste a direct link to an image (GIF, PNG, JPG) or video (MP4).
+                                <br />
+                                <span className="text-neutral-600">Note: For Giphy, right-click the GIF and select "Copy Image Link" (should end in .gif).</span>
+                            </p>
+
+                            {/* Banner Preview */}
+                            {bannerUrl && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-white/10 h-32 relative group">
+                                    {bannerUrl.endsWith('.mp4') || bannerUrl.endsWith('.webm') ? (
+                                        <video
+                                            src={bannerUrl}
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={bannerUrl}
+                                            alt="Banner Preview"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).style.display = 'none'
+                                            }}
+                                        />
+                                    )}
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-xs font-medium text-white">Preview</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Background Color Selection */}
                         <div>
                             <label className="text-sm font-medium text-neutral-300 mb-3 block">
@@ -200,17 +354,6 @@ export function ProfileCustomization({ isPremium, currentTheme, userId }: Profil
                                     </div>
                                 ))}
                             </div>
-                            {isPremium && selectedColor !== currentTheme?.backgroundColor && !currentTheme?.backgroundImage && (
-                                <div className="flex justify-end mt-4">
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={isLoading}
-                                        className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50"
-                                    >
-                                        {isLoading ? 'Saving...' : 'Save Color'}
-                                    </button>
-                                </div>
-                            )}
                         </div>
 
                         {/* Background Image Upload */}
@@ -265,6 +408,31 @@ export function ProfileCustomization({ isPremium, currentTheme, userId }: Profil
                                 </div>
                             )}
                         </div>
+
+                        {/* Save Button */}
+                        {isPremium && (
+                            <div className="flex justify-end pt-4 border-t border-white/10">
+                                <button
+                                    onClick={handleSave}
+                                    disabled={isLoading || (username !== initialUsername && usernameStatus !== 'valid')}
+                                    className={cn(
+                                        "px-6 py-2 bg-purple-500 text-white rounded-lg transition-colors font-medium text-sm flex items-center gap-2",
+                                        (isLoading || (username !== initialUsername && usernameStatus !== 'valid'))
+                                            ? "opacity-50 cursor-not-allowed"
+                                            : "hover:bg-purple-600"
+                                    )}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        'Save Changes'
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
