@@ -12,17 +12,26 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop'),
   title: {
-    default: "Sourcely",
+    default: "Sourcely | Premium Roblox Asset Marketplace",
     template: "%s | Sourcely"
   },
-  description: "The Roblox Developer Marketplace",
+  description: "The #1 marketplace for Roblox developers. Buy and sell high-quality models, scripts, UI, and maps. Join the community today.",
+  keywords: ['Roblox', 'Assets', 'Scripts', 'Models', 'Marketplace', 'Lua', 'Studio', 'Developers', 'GameDev', 'selling', 'buying', 'selling scripts', 'buying scripts', 'selling models', 'buying models', 'selling UI', 'buying UI', 'selling maps', 'buying maps'],
   openGraph: {
-    title: "Sourcely",
-    description: "The Roblox Developer Marketplace",
+    title: "Sourcely | Premium Roblox Asset Marketplace",
+    description: "The #1 marketplace for Roblox developers. Buy and sell high-quality models, scripts, UI, and maps.",
     url: process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop',
     siteName: 'Sourcely',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sourcely - Premium Roblox Asset Marketplace',
+      }
+    ],
   },
   robots: {
     index: true,
