@@ -60,7 +60,7 @@ export async function signup(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/login?message=check_email')
+    redirect('/signup/verify')
 }
 
 export async function signout() {
@@ -68,4 +68,37 @@ export async function signout() {
     await supabase.auth.signOut()
     revalidatePath('/', 'layout')
     redirect('/login')
+}
+
+export async function forgotPassword(formData: FormData) {
+    const supabase = await createClient()
+    const email = formData.get('email') as string
+    const callbackUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback?next=/update-password`
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: callbackUrl,
+    })
+
+    if (error) {
+        console.error('Error sending reset email:', error)
+        redirect('/forgot-password?error=Could not send reset email')
+    }
+
+    redirect('/forgot-password?message=check_email')
+}
+
+export async function updatePassword(formData: FormData) {
+    const supabase = await createClient()
+    const password = formData.get('password') as string
+
+    const { error } = await supabase.auth.updateUser({
+        password,
+    })
+
+    if (error) {
+        console.error('Error updating password:', error)
+        redirect('/update-password?error=Could not update password')
+    }
+
+    redirect('/?message=password_updated')
 }

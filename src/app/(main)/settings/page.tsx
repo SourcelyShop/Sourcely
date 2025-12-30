@@ -8,6 +8,8 @@ import { PreferencesSettings } from '@/components/PreferencesSettings'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
+import { AccountSettings } from '@/components/AccountSettings'
+
 export default async function SettingsPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -17,7 +19,7 @@ export default async function SettingsPage() {
     // Fetch user subscription details and profile theme
     const { data: userDetails } = await supabase
         .from('users')
-        .select('is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible, show_new_version_popup, username, banner_url')
+        .select('name, is_premium, stripe_subscription_id, profile_theme, discord_handle, roblox_handle, discord_visible, roblox_visible, show_new_version_popup, username, banner_url')
         .eq('id', user.id)
         .single()
 
@@ -30,6 +32,10 @@ export default async function SettingsPage() {
                 </FadeIn>
 
                 <StaggerContainer className="flex flex-col gap-8">
+                    <StaggerItem>
+                        <AccountSettings initialName={userDetails?.name || ''} />
+                    </StaggerItem>
+
                     <StaggerItem>
                         <SocialAccountsSettings
                             initialData={{
