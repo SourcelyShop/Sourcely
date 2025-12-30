@@ -98,3 +98,24 @@ export async function checkUsernameAvailability(username: string) {
     console.error('Error checking username:', error)
     return false // Fail safe to "taken" if error
 }
+
+export async function updateName(name: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        throw new Error('Not authenticated')
+    }
+
+    const { error } = await supabase
+        .from('users')
+        .update({
+            name: name,
+        })
+        .eq('id', user.id)
+
+    if (error) {
+        console.error('Error updating name:', error)
+        throw new Error(error.message)
+    }
+}
