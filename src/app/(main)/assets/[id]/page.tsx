@@ -15,10 +15,39 @@ import { WishlistButton } from '@/components/WishlistButton'
 import { AssetVoting } from '@/components/AssetVoting'
 import { BoostCountdown } from '@/components/BoostCountdown'
 
+import { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const supabaseAdmin = await createAdminClient()
+    const { id } = await params
+
+    const { data: asset } = await supabaseAdmin
+        .from('asset_listings')
+        .select('title, description, image_url, seller:users(name)')
+        .eq('id', id)
+        .single()
+
+    if (!asset) {
+        return {
+            title: 'Asset Not Found',
+        }
+    }
+
+    return {
+        title: `${asset.title} by ${(asset.seller as any)?.name}`,
+        description: asset.description?.slice(0, 160) || `Buy ${asset.title} on Sourcely.`,
+        openGraph: {
+            title: asset.title,
+            description: asset.description?.slice(0, 160),
+            images: asset.image_url ? [asset.image_url] : [],
+        },
+    }
+}
+
 export default async function AssetDetailPage({
     params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
     const supabase = await createClient()
     const supabaseAdmin = await createAdminClient()
