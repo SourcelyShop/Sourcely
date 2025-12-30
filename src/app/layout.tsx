@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'sonner';
 import { NewVersionPopup } from "@/components/NewVersionPopup";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({
   variable: "--font-sans",
@@ -81,6 +82,7 @@ export default async function RootLayout({
         {children}
         <NewVersionPopup enabled={showPopup} />
         <Toaster richColors theme="dark" position="bottom-right" />
+        <GoogleAnalytics gaId="G-7NFH1ERS5N" />
       </body>
     </html>
   );
