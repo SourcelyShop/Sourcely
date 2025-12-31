@@ -12,6 +12,7 @@ import { claimFreeAsset } from '../actions'
 import { DeleteListingButton } from '@/components/DeleteListingButton'
 
 import { WishlistButton } from '@/components/WishlistButton'
+import { ShareButton } from '@/components/ShareButton'
 import { AssetVoting } from '@/components/AssetVoting'
 import { BoostCountdown } from '@/components/BoostCountdown'
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     const { data: asset } = await supabaseAdmin
         .from('asset_listings')
-        .select('title, description, image_url, seller:users(name)')
+        .select('id, title, description, image_url, price_cents, seller:users(name)')
         .eq('id', id)
         .single()
 
@@ -33,12 +34,41 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         }
     }
 
+    // Fetch stats for metadata
+    const { count: salesCount } = await supabaseAdmin
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('listing_id', asset.id)
+        .eq('status', 'complete')
+
+    const { count: upvotes } = await supabaseAdmin
+        .from('asset_votes')
+        .select('*', { count: 'exact', head: true })
+        .eq('asset_id', asset.id)
+        .eq('vote_type', 'up')
+
+    const { count: downvotes } = await supabaseAdmin
+        .from('asset_votes')
+        .select('*', { count: 'exact', head: true })
+        .eq('asset_id', asset.id)
+        .eq('vote_type', 'down')
+
+    const totalVotes = (upvotes || 0) + (downvotes || 0)
+    const rating = totalVotes > 0
+        ? ((upvotes || 0) / totalVotes * 5).toFixed(1)
+        : 'New'
+
+    const price = asset.price_cents === 0 ? 'Free' : `$${(asset.price_cents / 100).toFixed(2)}`
+    const author = (asset.seller as any)?.name || 'Unknown'
+
+    const description = `By ${author} • ${price} • ${rating} ★ • ${salesCount || 0} Sales • ${asset.description?.slice(0, 100)}...`
+
     return {
-        title: `${asset.title} by ${(asset.seller as any)?.name}`,
-        description: asset.description?.slice(0, 160) || `Buy ${asset.title} on Sourcely.`,
+        title: `${asset.title} on Sourcely`,
+        description: description,
         openGraph: {
             title: asset.title,
-            description: asset.description?.slice(0, 160),
+            description: description,
             images: asset.image_url ? [asset.image_url] : [],
         },
     }
@@ -233,26 +263,30 @@ export default async function AssetDetailPage({
                         </div>
 
                         <div className="glass-card p-8 rounded-2xl border border-white/10 space-y-8 bg-neutral-900/60 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-
-
                             <div className="flex items-end justify-between pb-6 border-b border-white/5 relative z-10">
                                 <div>
                                     <p className="text-sm text-neutral-400 font-medium mb-1 uppercase tracking-wider">Price</p>
                                     <p className="text-5xl font-bold text-white tracking-tight">${(asset.price_cents / 100).toFixed(2)}</p>
                                 </div>
-                                {!owner && (
-                                    <WishlistButton
+                                <div className="flex gap-2">
+                                    <ShareButton
                                         assetId={asset.id}
-                                        initialIsWishlisted={isWishlisted}
                                         className="w-12 h-12 flex items-center justify-center bg-white/5 hover:bg-white/10"
+                                        iconClassName="w-5 h-5"
                                     />
-                                )}
+                                    {!owner && (
+                                        <WishlistButton
+                                            assetId={asset.id}
+                                            initialIsWishlisted={isWishlisted}
+                                            className="w-12 h-12 flex items-center justify-center bg-white/5 hover:bg-white/10"
+                                        />
+                                    )}
+                                </div>
                             </div>
                             {owner && (
                                 <div className="flex items-end justify-between relative z-10">
                                     <div>
                                         <p className="text-sm text-neutral-400 mb-1">Estimated Value ${(asset.price_cents / 100) - (Math.round(asset.price_cents * PLATFORM_COMMISSION_RATE) / 100)}</p>
-
                                     </div>
                                 </div>
                             )}

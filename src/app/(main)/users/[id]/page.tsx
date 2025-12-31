@@ -9,6 +9,59 @@ import { Tooltip } from '@/components/ui/tooltip'
 
 import { ProfileVoting } from '@/components/ProfileVoting'
 import { ProfileEditButton } from '@/components/ProfileEditButton'
+import { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const supabaseAdmin = await createAdminClient()
+    const { id } = await params
+
+    const { data: user } = await supabaseAdmin
+        .from('users')
+        .select('id, name, description, avatar_url')
+        .eq('id', id)
+        .single()
+
+    if (!user) {
+        return {
+            title: 'User Not Found',
+        }
+    }
+
+    // Fetch stats
+    const { count: listingsCount } = await supabaseAdmin
+        .from('asset_listings')
+        .select('*', { count: 'exact', head: true })
+        .eq('seller_id', user.id)
+
+    const { count: upvotes } = await supabaseAdmin
+        .from('profile_votes')
+        .select('*', { count: 'exact', head: true })
+        .eq('target_user_id', user.id)
+        .eq('vote_type', 'up')
+
+    const { count: downvotes } = await supabaseAdmin
+        .from('profile_votes')
+        .select('*', { count: 'exact', head: true })
+        .eq('target_user_id', user.id)
+        .eq('vote_type', 'down')
+
+    const totalVotes = (upvotes || 0) + (downvotes || 0)
+    const rating = totalVotes > 0
+        ? ((upvotes || 0) / totalVotes * 5).toFixed(1)
+        : 'New'
+
+    const description = `${user.name} on Sourcely • ${rating} ★ • ${listingsCount || 0} Listings • ${user.description?.slice(0, 100) || 'Check out my profile!'}`
+
+    return {
+        title: `${user.name} on Sourcely`,
+        description: description,
+        openGraph: {
+            title: user.name,
+            description: description,
+            images: user.avatar_url ? [user.avatar_url] : [],
+        },
+    }
+}
 
 export default async function UserProfilePage({
     params,

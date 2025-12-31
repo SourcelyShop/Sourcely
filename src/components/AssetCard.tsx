@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Tag, Crown } from 'lucide-react'
 
 import { WishlistButton } from './WishlistButton'
+import { ShareButton } from './ShareButton'
 
 interface AssetListing {
     id: string
@@ -55,7 +56,8 @@ export function AssetCard({ asset }: { asset: AssetListing }) {
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/0" />
                     )}
-                    <div className="absolute top-3 right-3 z-10">
+                    <div className="absolute top-3 right-3 z-10 flex gap-2">
+                        <ShareButton assetId={asset.id} />
                         <WishlistButton
                             assetId={asset.id}
                             initialIsWishlisted={!!asset.isWishlisted}
