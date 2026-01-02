@@ -7,6 +7,11 @@ export function middleware(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams.toString()
     const path = `${url.pathname}${searchParams.length > 0 ? `?${searchParams}` : ''}`
 
+    // Explicitly allow root path to bypass any potential redirect logic
+    if (url.pathname === '/') {
+        return NextResponse.next()
+    }
+
     // Check if the hostname starts with 'waitlist.'
     // Adjust 'localhost:3000' to your production domain when deploying
     const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN
