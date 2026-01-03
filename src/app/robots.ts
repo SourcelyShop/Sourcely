@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
+import { BASE_URL } from '@/utils/url'
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop'
+    const baseUrl = BASE_URL
 
     return {
         rules: {

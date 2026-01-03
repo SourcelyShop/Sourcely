@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { ROOT_DOMAIN } from '@/utils/url'
 
 export function middleware(request: NextRequest) {
     const url = request.nextUrl
@@ -14,7 +15,7 @@ export function middleware(request: NextRequest) {
 
     // Check if the hostname starts with 'waitlist.'
     // Adjust 'localhost:3000' to your production domain when deploying
-    const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN
+    const rootDomain = ROOT_DOMAIN
     const isWaitlistSubdomain = rootDomain
         ? hostname === `waitlist.${rootDomain}`
         : hostname.startsWith('waitlist.')
