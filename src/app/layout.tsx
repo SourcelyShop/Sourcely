@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from 'sonner';
 import { NewVersionPopup } from "@/components/NewVersionPopup";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { BASE_URL } from "@/utils/url";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -11,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop'),
+  metadataBase: new URL(BASE_URL),
   title: {
     default: "Sourcely | Premium Roblox Asset Marketplace",
     template: "%s | Sourcely"
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sourcely | Premium Roblox Asset Marketplace",
     description: "The #1 marketplace for Roblox developers. Buy and sell high-quality models, scripts, UI, and maps.",
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sourcely.shop',
+    url: BASE_URL,
     siteName: 'Sourcely',
     locale: 'en_US',
     type: 'website',
