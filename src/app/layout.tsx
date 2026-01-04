@@ -27,14 +27,10 @@ export const metadata: Metadata = {
     siteName: 'Sourcely',
     locale: 'en_US',
     type: 'website',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Sourcely - Premium Roblox Asset Marketplace',
-      }
-    ],
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
   },
   robots: {
     index: true,
