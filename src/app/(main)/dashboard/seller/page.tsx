@@ -181,8 +181,21 @@ export default async function SellerDashboard() {
                             ))}
                         </div>
                     ) : (
-                        <div className="glass-card rounded-xl border border-white/10 p-12 text-center text-muted-foreground text-white">
-                            No listings yet. Create your first asset to start selling!
+                        <div className="glass-card rounded-xl border border-white/10 p-12 flex flex-col items-center justify-center text-center">
+                            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                                <Package className="w-10 h-10 text-neutral-400" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">No listings yet</h3>
+                            <p className="text-neutral-400 max-w-md mb-8">
+                                You haven't created any listings yet. Start selling your Roblox assets today and reach thousands of developers.
+                            </p>
+                            <Link
+                                href="/dashboard/seller/listings/new"
+                                className="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
+                            >
+                                <Plus className="w-5 h-5" />
+                                Create First Listing
+                            </Link>
                         </div>
                     )}
                 </div>
