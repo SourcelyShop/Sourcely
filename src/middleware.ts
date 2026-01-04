@@ -10,7 +10,18 @@ export function middleware(request: NextRequest) {
 
     // Explicitly allow root path to bypass any potential redirect logic
     if (url.pathname === '/') {
+        // But still enforce non-www if needed
+        if (hostname === `www.${ROOT_DOMAIN}`) {
+            url.hostname = ROOT_DOMAIN
+            return NextResponse.redirect(url)
+        }
         return NextResponse.next()
+    }
+
+    // Redirect www to non-www (canonical)
+    if (hostname === `www.${ROOT_DOMAIN}`) {
+        url.hostname = ROOT_DOMAIN
+        return NextResponse.redirect(url)
     }
 
     // Check if the hostname starts with 'waitlist.'
