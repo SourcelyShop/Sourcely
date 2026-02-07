@@ -78,6 +78,37 @@ export async function createTicket(prevState: any, formData: FormData) {
     }
 }
 
+export async function submitReport(prevState: any, formData: FormData) {
+    const reason = formData.get('reason') as string
+    const description = formData.get('description') as string
+    const reportedUrl = formData.get('reportedUrl') as string
+    const reportedType = formData.get('reportedType') as string // 'asset' | 'user'
+
+    if (!reason || !description) {
+        return { error: 'Reason and description are required.' }
+    }
+
+    // Construct a standardized subject and message
+    const subject = `[REPORT] ${reason}: ${reportedType} report`
+
+    const fullMessage = `
+**Report Details**
+- **Type**: ${reportedType}
+- **Reason**: ${reason}
+- **URL**: ${reportedUrl}
+
+**Description**
+${description}
+    `.trim()
+
+    // Create a new FormData to reuse the existing createTicket logic
+    const newFormData = new FormData()
+    newFormData.set('subject', subject)
+    newFormData.set('message', fullMessage)
+
+    return createTicket(prevState, newFormData)
+}
+
 export async function replyToTicket(ticketId: string, message: string) {
     const supabase = await createClient()
     const supabaseAdmin = await createAdminClient()

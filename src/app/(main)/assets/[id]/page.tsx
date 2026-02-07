@@ -15,6 +15,7 @@ import { WishlistButton } from '@/components/WishlistButton'
 import { ShareButton } from '@/components/ShareButton'
 import { AssetVoting } from '@/components/AssetVoting'
 import { BoostCountdown } from '@/components/BoostCountdown'
+import { ReportButton } from '@/components/ReportButton'
 
 import { Metadata } from 'next'
 
@@ -379,11 +380,19 @@ export default async function AssetDetailPage({
                                 )
                             )}
 
-                            <div className="pt-6 border-t border-white/5">
-                                <h3 className="text-lg font-semibold mb-3 text-white">Description</h3>
-                                <div className="prose prose-invert max-w-none text-neutral-300 leading-relaxed">
-                                    <p>{asset.description}</p>
+                            <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-3 text-white">Description</h3>
+                                    <div className="prose prose-invert max-w-none text-neutral-300 leading-relaxed">
+                                        <p>{asset.description}</p>
+                                    </div>
                                 </div>
+                            </div>
+                            <div className="pt-4 border-t border-white/5 flex justify-end">
+                                <ReportButton
+                                    reportedUrl={`/assets/${asset.id}`}
+                                    reportedType="asset"
+                                />
                             </div>
                         </div>
                     </div>

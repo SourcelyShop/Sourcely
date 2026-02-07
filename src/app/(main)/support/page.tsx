@@ -78,7 +78,7 @@ export default function SupportPage() {
                         Support
                     </h1>
                     <p className="text-neutral-400 text-center mb-12 max-w-lg">
-                        If you have any questions or need assistance, please don't hesitate to contact us.
+                        If you have any questions or need assistance, please don't hesitate to contact our support team.
                     </p>
 
                     <SupportForm />

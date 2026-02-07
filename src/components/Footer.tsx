@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Linkedin } from 'lucide-react'
-import { GithubIcon } from './GithubIcon'
 import { InstagramIcon } from './InstagramIcon'
 import { TwitterIcon } from './TwitterIcon'
 
@@ -18,7 +17,6 @@ export function Footer() {
                     <div className="flex gap-4 text-neutral-400">
                         <Link href="#" className="hover:text-white transition-colors"><TwitterIcon className="w-5 h-5" /></Link>
                         <Link href="#" className="hover:text-white transition-colors"><InstagramIcon className="w-5 h-5" /></Link>
-                        <Link href="#" className="hover:text-white transition-colors"><GithubIcon className="w-5 h-5" /></Link>
                     </div>
                 </div>
 
@@ -26,7 +24,6 @@ export function Footer() {
                 <div className="flex gap-16 text-sm text-neutral-400">
                     <div className="flex flex-col gap-3">
                         <h4 className="font-medium text-white">Product</h4>
-                        <Link href="#" className="hover:text-white transition-colors">Features</Link>
                         <Link href="/premium" className="hover:text-white transition-colors">Premium</Link>
                         <Link href="/partners" className="hover:text-white transition-colors">Partners</Link>
                         <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
@@ -34,8 +31,7 @@ export function Footer() {
                     <div className="flex flex-col gap-3">
                         <h4 className="font-medium text-white">Support</h4>
                         <Link href="#" className="hover:text-white transition-colors">Documentation</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Help Center</Link>
-                        <Link href="/support" className="hover:text-white transition-colors">Contact</Link>
+                        <Link href="/support" className="hover:text-white transition-colors">Support</Link>
                     </div>
                     <div className="flex flex-col gap-3">
                         <h4 className="font-medium text-white">Legal</h4>
