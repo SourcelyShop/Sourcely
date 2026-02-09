@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAdminStats, DateRange } from './actions';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Loader2, Download, MessageSquare } from 'lucide-react';
+import { Loader2, Download, MessageSquare, Flag } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/animations";
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
             <div className="max-w-7xl mx-auto space-y-8">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <h1 className="text-3xl font-bold text-white">Admin Dashboard (only real sigmas can see this)</h1>
+                        <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
                         <Link href="/dashboard/admin/support" className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 relative group">
                             <MessageSquare className="w-4 h-4" />
                             Support Tickets
@@ -109,6 +109,10 @@ export default function AdminDashboard() {
                                     {stats.openTicketCount}
                                 </span>
                             )}
+                        </Link>
+                        <Link href="/dashboard/admin/reports" className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <Flag className="w-4 h-4 text-red-500" />
+                            Reports & DMCA
                         </Link>
                     </div>
                     <div className="flex gap-2 bg-white/5 p-1 rounded-lg">

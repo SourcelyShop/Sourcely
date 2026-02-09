@@ -253,6 +253,7 @@ export const NavbarLogo = () => {
         width={30}
         height={30}
       />
+      {/* --TODO add sourcely + */}
       <span className="text-1xl md:text-1xl bg-clip-text font-bold text-black text-transparent bg-gradient-to-b from-white/90 to-white/40 tracking-tight">Sourcely</span>
     </motion.a>
   );

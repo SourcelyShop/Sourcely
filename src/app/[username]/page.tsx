@@ -3,7 +3,7 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/animation
 import { getAssetStats } from '@/utils/getAssetStats'
 import { notFound } from 'next/navigation'
 import { AssetCard } from '@/components/AssetCard'
-import { Calendar, Package, Crown, ShieldCheck } from 'lucide-react'
+import { Calendar, Package, Crown, ShieldCheck, Hammer } from 'lucide-react'
 import { AvatarUpload } from '@/components/AvatarUpload'
 import { Tooltip } from '@/components/ui/tooltip'
 
@@ -231,6 +231,7 @@ export default async function CustomProfilePage({
                                                 </div>
                                             </Tooltip>
                                         )}
+                                        
                                         {isOwner && <ProfileEditButton user={user} />}
                                     </div>
 

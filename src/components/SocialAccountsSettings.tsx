@@ -59,11 +59,11 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
             </p>
 
             <div className="space-y-6">
-                {/* Discord */}
+                {/* Discord  TODO ADD ICON */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <IconBrandDiscord className="w-5 h-5 text-[#5865F2]" />
+                            
                             <Label htmlFor="discord_handle" className="text-white">Discord</Label>
                         </div>
                         <div className="flex items-center gap-2">
@@ -85,11 +85,11 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
                     />
                 </div>
 
-                {/* Roblox */}
+                {/* Roblox TODO ADD ROBLOX ICON*/}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <RobloxIcon className="w-5 h-5 text-white" />
+                            
                             <Label htmlFor="roblox_handle" className="text-white">Roblox</Label>
                         </div>
                         <div className="flex items-center gap-2">
