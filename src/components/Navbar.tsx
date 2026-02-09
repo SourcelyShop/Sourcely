@@ -55,10 +55,6 @@ export function Navbar({ user, avatarUrl, is_admin, isPremium }: NavbarProps) {
             link: "/discover",
         },
         {
-            name: "Hiring",
-            link: "/hiring",
-        },
-        {
             name: "Partners",
             link: "/partners",
         },

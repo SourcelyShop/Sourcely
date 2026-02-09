@@ -76,7 +76,7 @@ export default async function CustomProfilePage({
     // Fetch user details by username
     const { data: user } = await supabaseAdmin
         .from('users')
-        .select('id, name, created_at, avatar_url, is_premium, profile_theme, description, roles, is_admin, discord_handle, roblox_handle, discord_visible, roblox_visible, banner_url, is_founder')
+        .select('id, name, created_at, avatar_url, is_premium, profile_theme, description, roles, is_admin, discord_handle, roblox_handle, discord_visible, roblox_visible, banner_url')
         .eq('username', username)
         .single() as { data: any, error: any }
 
@@ -151,22 +151,20 @@ export default async function CustomProfilePage({
     let navbarAvatarUrl = null;
     let navbarIsAdmin = false;
     let navbarIsPremium = false;
-    let navbarIsFounder = false;
     if (currentUser) {
         const { data: profile } = await supabase
             .from('users')
-            .select('avatar_url, is_admin, is_premium, is_founder')
+            .select('avatar_url, is_admin, is_premium')
             .eq('id', currentUser.id)
             .single();
         navbarAvatarUrl = profile?.avatar_url;
         navbarIsAdmin = profile?.is_admin;
         navbarIsPremium = profile?.is_premium;
-        navbarIsFounder = profile?.is_founder;
     }
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar user={currentUser} avatarUrl={navbarAvatarUrl} is_admin={navbarIsAdmin} isPremium={navbarIsPremium} isFounder={navbarIsFounder} />
+            <Navbar user={currentUser} avatarUrl={navbarAvatarUrl} is_admin={navbarIsAdmin} isPremium={navbarIsPremium} />
 
             <div
                 className={`flex-1 ${bgClass} py-24 px-4 transition-all duration-500`}
@@ -233,13 +231,7 @@ export default async function CustomProfilePage({
                                                 </div>
                                             </Tooltip>
                                         )}
-                                        {user.is_founder && (
-                                            <Tooltip content="Founder">
-                                                <div className="bg-gradient-to-br from-black-500 to-indigo-600 p-1.5 rounded-full shadow-lg shadow-blue-500/20">
-                                                    <Hammer className="w-4 h-4 text-white fill-white" />
-                                                </div>
-                                            </Tooltip>
-                                        )}
+                                        
                                         {isOwner && <ProfileEditButton user={user} />}
                                     </div>
 
