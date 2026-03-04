@@ -53,9 +53,9 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <div className="min-h-screen bg-background p-20 flex justify-center">
+        <div className="relative min-h-screen w-full pt-24 pb-12 px-4 flex justify-center">
             <div className="max-w-2xl w-full">
-                <h1 className="text-3xl font-bold mb-8 text-white text-center">Edit Listing</h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-8 text-white text-center">Edit Listing</h1>
 
                 <form action={updateListing} className="space-y-8">
                     <input type="hidden" name="id" value={listing.id} />
@@ -73,7 +73,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                                 type="text"
                                 defaultValue={listing.title}
                                 required
-                                className="w-full px-4 py-3 rounded-lg bg-white border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                className="w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
                             />
                         </div>
 
@@ -92,7 +92,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                                     />
                                 </div>
                             )}
-                            <div className="relative border-2 border-dashed border-white/20 rounded-lg p-8 text-center hover:border-primary/50 transition-colors group">
+                            <div className="relative border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-white/40 hover:bg-white/5 transition-all group">
                                 <input
                                     id="image"
                                     name="image"
@@ -124,7 +124,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                                 rows={4}
                                 defaultValue={listing.description}
                                 required
-                                className="w-full px-4 py-3 rounded-lg bg-white border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                                className="w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all resize-none"
                             />
                         </div>
 
@@ -140,7 +140,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                         </button>
                         <button
                             type="submit"
-                            className="w-2/3 py-4 bg-white hover:bg-white/90 text-black font-bold text-lg rounded-xl shadow-lg shadow-primary/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                            className="w-2/3 py-4 bg-white hover:bg-neutral-200 text-black font-bold text-lg rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2"
                         >
                             Save Changes
                         </button>

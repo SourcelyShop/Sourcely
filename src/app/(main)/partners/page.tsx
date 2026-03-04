@@ -59,7 +59,7 @@ export default function PartnersPage() {
 
                 {/* Call to Action */}
                 <div className="mt-32 glass-card p-12 rounded-3xl border border-white/10 text-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-purple-500/10" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-white-500/10" />
                     <div className="relative z-10">
                         <h2 className="text-3xl font-bold text-white mb-4">Ready to build together?</h2>
                         <p className="text-neutral-400 mb-8 max-w-xl mx-auto">

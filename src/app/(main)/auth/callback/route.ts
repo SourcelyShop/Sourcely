@@ -26,6 +26,33 @@ export async function GET(request: Request) {
 
         if (error) {
             console.error('Auth Callback Error:', error)
+        } else if (type === 'link') {
+            // Identity linking successful, let's grab the Discord username
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user) {
+                // Find the Discord identity we just linked
+                const discordIdentity = user.identities?.find(id => id.provider === 'discord')
+
+                if (discordIdentity) {
+                    const discordUsername = discordIdentity.identity_data?.preferred_username ||
+                        discordIdentity.identity_data?.custom_claims?.global_name ||
+                        discordIdentity.identity_data?.name
+
+                    if (discordUsername) {
+                        const { error: updateError } = await supabase
+                            .from('users')
+                            .update({ discord_handle: discordUsername })
+                            .eq('id', user.id)
+
+                        if (updateError) {
+                            console.error('Failed to update public user with Discord handle:', updateError)
+                        } else {
+                            console.log('Successfully linked and updated Discord handle:', discordUsername)
+                        }
+                    }
+                }
+            }
         }
 
         if (!error) {
