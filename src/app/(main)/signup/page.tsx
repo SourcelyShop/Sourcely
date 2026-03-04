@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AuthLayout, LabelInputContainer, BottomGradient } from "@/components/ui/auth-components";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { OAuthButtons } from '@/components/OAuthButtons'
 
 export default function SignupPage() {
     return (
@@ -58,6 +59,12 @@ export default function SignupPage() {
                     <BottomGradient />
                 </button>
             </form>
+
+            <div className="my-6 flex items-center gap-4 before:h-px before:flex-1 before:bg-white/10 after:h-px after:flex-1 after:bg-white/10">
+                <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Or continue with</span>
+            </div>
+
+            <OAuthButtons />
 
             <div className="mt-8 text-center text-sm text-neutral-400">
                 Already have an account?{' '}

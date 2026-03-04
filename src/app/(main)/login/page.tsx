@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AuthLayout, LabelInputContainer, BottomGradient } from "@/components/ui/auth-components";
+import { OAuthButtons } from '@/components/OAuthButtons'
 
 export default function LoginPage() {
     const searchParams = useSearchParams()
@@ -72,6 +73,12 @@ export default function LoginPage() {
                     <BottomGradient />
                 </button>
             </form>
+
+            <div className="my-6 flex items-center gap-4 before:h-px before:flex-1 before:bg-white/10 after:h-px after:flex-1 after:bg-white/10">
+                <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Or continue with</span>
+            </div>
+
+            <OAuthButtons />
 
             <div className="mt-8 text-center text-sm text-neutral-400">
                 Don't have an account?{' '}

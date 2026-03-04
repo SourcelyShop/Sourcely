@@ -5,9 +5,10 @@ import { motion } from 'framer-motion'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { updateSocialAccounts } from '@/app/(main)/settings/actions'
+import { updateSocialAccounts, linkDiscordAccount, unlinkDiscordAccount, verifyRobloxWithBloxlink, unlinkRobloxAccount } from '@/app/(main)/settings/actions'
+import { Tooltip } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
-import { Loader2, Save } from 'lucide-react'
+import { Loader2, Save, Link as LinkIcon, Unlink as UnlinkIcon } from 'lucide-react'
 import { IconBrandDiscord } from '@tabler/icons-react'
 
 const RobloxIcon = ({ className }: { className?: string }) => (
@@ -38,6 +39,51 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
         discord_visible: initialData.discord_visible || false,
         roblox_visible: initialData.roblox_visible || false,
     })
+    const [isLinkingDiscord, setIsLinkingDiscord] = useState(false)
+    const [isUnlinkingDiscord, setIsUnlinkingDiscord] = useState(false)
+
+    // Roblox Bloxlink state
+    const [isVerifyingRoblox, setIsVerifyingRoblox] = useState(false)
+    const [isUnlinkingRoblox, setIsUnlinkingRoblox] = useState(false)
+
+    const handleUnlinkDiscord = async () => {
+        try {
+            setIsUnlinkingDiscord(true)
+            await unlinkDiscordAccount()
+            setFormData(prev => ({ ...prev, discord_handle: '', discord_visible: false }))
+            toast.success('Discord account unlinked successfully')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to unlink Discord account')
+        } finally {
+            setIsUnlinkingDiscord(false)
+        }
+    }
+
+    const handleVerifyRoblox = async () => {
+        try {
+            setIsVerifyingRoblox(true)
+            const res = await verifyRobloxWithBloxlink()
+            setFormData(prev => ({ ...prev, roblox_handle: res.username }))
+            toast.success('Roblox verified via Bloxlink!')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to verify Roblox account')
+        } finally {
+            setIsVerifyingRoblox(false)
+        }
+    }
+
+    const handleUnlinkRoblox = async () => {
+        try {
+            setIsUnlinkingRoblox(true)
+            await unlinkRobloxAccount()
+            setFormData(prev => ({ ...prev, roblox_handle: '', roblox_visible: false }))
+            toast.success('Roblox account unlinked successfully')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to unlink Roblox account')
+        } finally {
+            setIsUnlinkingRoblox(false)
+        }
+    }
 
     const handleSave = async () => {
         try {
@@ -59,14 +105,14 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
             </p>
 
             <div className="space-y-6">
-                {/* Discord  TODO ADD ICON */}
+                {/* Discord */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            
+                            <IconBrandDiscord className="w-5 h-5 text-[#5865F2]" />
                             <Label htmlFor="discord_handle" className="text-white">Discord</Label>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <span className="text-xs text-neutral-400">
                                 {formData.discord_visible ? 'Visible on profile' : 'Hidden from profile'}
                             </span>
@@ -74,25 +120,54 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
                                 checked={formData.discord_visible}
                                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, discord_visible: checked }))}
                             />
+                            {formData.discord_handle && (
+                                <Tooltip content="Unlink Discord account">
+                                    <button
+                                        type="button"
+                                        onClick={handleUnlinkDiscord}
+                                        disabled={isUnlinkingDiscord}
+                                        className="p-1.5 ml-2 hover:bg-white/10 rounded-md text-neutral-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                                    >
+                                        {isUnlinkingDiscord ? <Loader2 className="w-4 h-4 animate-spin" /> : <UnlinkIcon className="w-4 h-4" />}
+                                    </button>
+                                </Tooltip>
+                            )}
                         </div>
                     </div>
-                    <Input
-                        id="discord_handle"
-                        placeholder="username#0000"
-                        value={formData.discord_handle}
-                        onChange={(e) => setFormData(prev => ({ ...prev, discord_handle: e.target.value }))}
-                        className="bg-black/50 border-white/10 text-white"
-                    />
+                    {formData.discord_handle ? (
+                        <div className="">
+                            <Input
+                                id="discord_handle"
+                                value={formData.discord_handle}
+                                readOnly
+                                className="bg-black/50 border-white/10 text-neutral-400 cursor-default focus-visible:ring-0 shadow-none"
+                            />
+                        </div>
+                    ) : (
+                        <form action={() => {
+                            setIsLinkingDiscord(true)
+                            linkDiscordAccount()
+                        }}>
+                            <button
+                                type="submit"
+                                disabled={isLinkingDiscord}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#5865F2]/10 border border-[#5865F2]/20 hover:bg-[#5865F2]/20 text-[#5865F2] transition-colors font-medium text-sm disabled:opacity-50"
+                            >
+                                {isLinkingDiscord ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
+                                Link Discord Account
+                            </button>
+                        </form>
+                    )}
                 </div>
 
-                {/* Roblox TODO ADD ROBLOX ICON*/}
+                {/* Roblox */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            
+                            <RobloxIcon className="w-5 h-5 text-white" />
                             <Label htmlFor="roblox_handle" className="text-white">Roblox</Label>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <span className="text-xs text-neutral-400">
                                 {formData.roblox_visible ? 'Visible on profile' : 'Hidden from profile'}
                             </span>
@@ -100,15 +175,40 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
                                 checked={formData.roblox_visible}
                                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, roblox_visible: checked }))}
                             />
+                            {formData.roblox_handle && (
+                                <Tooltip content="Unlink Roblox account">
+                                    <button
+                                        type="button"
+                                        onClick={handleUnlinkRoblox}
+                                        disabled={isUnlinkingRoblox}
+                                        className="p-1.5 ml-2 hover:bg-white/10 rounded-md text-neutral-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                                    >
+                                        {isUnlinkingRoblox ? <Loader2 className="w-4 h-4 animate-spin" /> : <UnlinkIcon className="w-4 h-4" />}
+                                    </button>
+                                </Tooltip>
+                            )}
                         </div>
                     </div>
-                    <Input
-                        id="roblox_handle"
-                        placeholder="Roblox Username"
-                        value={formData.roblox_handle}
-                        onChange={(e) => setFormData(prev => ({ ...prev, roblox_handle: e.target.value }))}
-                        className="bg-black/50 border-white/10 text-white"
-                    />
+                    {formData.roblox_handle ? (
+                        <div className="">
+                            <Input
+                                id="roblox_handle"
+                                value={formData.roblox_handle}
+                                readOnly
+                                className="bg-black/50 border-white/10 text-neutral-400 cursor-default focus-visible:ring-0 shadow-none"
+                            />
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            disabled={!formData.discord_handle || isVerifyingRoblox}
+                            onClick={handleVerifyRoblox}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white transition-colors font-medium text-sm disabled:opacity-50"
+                        >
+                            {isVerifyingRoblox ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
+                            {!formData.discord_handle ? "Link Discord to verify Roblox" : "Verify via Bloxlink"}
+                        </button>
+                    )}
                 </div>
 
                 <div className="pt-4 flex justify-end">

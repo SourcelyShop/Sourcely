@@ -92,17 +92,17 @@ export default async function SellerDashboard() {
     return (
         <div className="relative min-h-screen w-full">
             <StripeOnboardingHandler isConnected={isStripeConnected} />
-            <div className="max-h-screen flex flex-col items-around justify-top px-40 py-17">
+            <div className="max-w-6xl mx-auto flex flex-col pt-24 px-4 pb-12 w-full">
                 <header className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-5xl font-bold text-white">Seller Dashboard</h1>
-                        <p className="text-muted-foreground text-white">Manage your listings and earnings</p>
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">Seller Dashboard</h1>
+                        <p className="text-neutral-400">Manage your listings and earnings</p>
                     </div>
                     <Link
                         href="/dashboard/seller/listings/new"
-                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-white bg-neutral-900/50"
+                        className="flex items-center gap-2 bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors"
                     >
-                        <Plus className="w-4 h-4 text-white" />
+                        <Plus className="w-4 h-4" />
                         New Listing
                     </Link>
                 </header>
@@ -110,8 +110,8 @@ export default async function SellerDashboard() {
                 {!isStripeConnected && (
                     <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-8 flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-semibold text-yellow-500">Payment Setup Required</h3>
-                            <p className="text-muted-foreground text-white">Connect your Stripe account to start receiving payouts.</p>
+                            <h3 className="text-lg font-semibold text-yellow-500 mb-1">Payment Setup Required</h3>
+                            <p className="text-yellow-500/80 text-sm">Connect your Stripe account to start receiving payouts.</p>
                         </div>
                         <a
                             href="/api/stripe/connect"
@@ -122,14 +122,14 @@ export default async function SellerDashboard() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 ">
-                    <div className="glass-card p-6 rounded-xl  border border-white/10 ">
-                        <div className="flex items-center gap-4 mb-4 ">
-                            <div className="p-3 bg-green-500/10 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="glass-card p-6 rounded-xl border border-white/10">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-green-500/10 rounded-xl">
                                 <DollarSign className="w-6 h-6 text-green-500" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground text-white">Total Earnings</p>
+                                <p className="text-sm font-medium text-neutral-400 mb-1">Total Earnings</p>
                                 <h3 className="text-2xl font-bold text-white">${(totalEarningsCents / 100).toFixed(2)}</h3>
                             </div>
                         </div>
@@ -137,11 +137,11 @@ export default async function SellerDashboard() {
 
                     <div className="glass-card p-6 rounded-xl border border-white/10">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-blue-500/10 rounded-lg">
-                                <Package className="w-6 h-6 text-blue-500 text-white" />
+                            <div className="p-3 bg-blue-500/10 rounded-xl">
+                                <Package className="w-6 h-6 text-blue-500" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground text-white">Active Listings</p>
+                                <p className="text-sm font-medium text-neutral-400 mb-1">Active Listings</p>
                                 <h3 className="text-2xl font-bold text-white">{listings?.length || 0}</h3>
                             </div>
                         </div>
@@ -150,11 +150,11 @@ export default async function SellerDashboard() {
                     {/* Boost Credits Card */}
                     <div className="glass-card p-6 rounded-xl border border-white/10">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-purple-500/10 rounded-lg">
+                            <div className="p-3 bg-purple-500/10 rounded-xl">
                                 <Rocket className="w-6 h-6 text-purple-500" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground text-white">Boost Credits</p>
+                                <p className="text-sm font-medium text-neutral-400 mb-1">Boost Credits</p>
                                 <h3 className="text-2xl font-bold text-white">{boostCredits}</h3>
                             </div>
                         </div>

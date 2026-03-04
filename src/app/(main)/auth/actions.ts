@@ -70,6 +70,36 @@ export async function signout() {
     redirect('/login')
 }
 
+export async function signInWithOAuth(provider: 'google' | 'discord') {
+    const supabase = await createClient()
+
+    // Try to get the base URL dynamically if env var is missing
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    if (!baseUrl) {
+        // Fallback for Vercel/production if env var is not set
+        baseUrl = `https://${process.env.VERCEL_URL}`
+    }
+    if (!baseUrl || baseUrl === 'undefined') {
+        baseUrl = 'https://www.sourcely.shop' // Final fallback
+    }
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            redirectTo: `${baseUrl}/auth/callback?next=/`,
+        },
+    })
+
+    if (error) {
+        console.error(`Error logging in with ${provider}:`, error)
+        redirect(`/login?error=Could not authenticate with ${provider}`)
+    }
+
+    if (data.url) {
+        redirect(data.url)
+    }
+}
+
 export async function forgotPassword(formData: FormData) {
     const supabase = await createClient()
     const email = formData.get('email') as string
