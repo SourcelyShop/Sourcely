@@ -2,6 +2,7 @@
 
 import { createAdminClient, createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import crypto from 'crypto'
 
 export async function deleteAccount() {
     const supabase = await createClient()
@@ -83,7 +84,7 @@ export async function unlinkDiscordAccount() {
     }
 }
 
-export async function verifyRobloxWithBloxlink() {
+export async function getRobloxVerificationCode() {
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -91,63 +92,54 @@ export async function verifyRobloxWithBloxlink() {
         throw new Error('Not authenticated')
     }
 
-    // 1. Get Discord Identity
-    const discordIdentity = user.identities?.find(id => id.provider === 'discord')
-    if (!discordIdentity) {
-        throw new Error('Please link your Discord account first to verify via Bloxlink.')
+    // Generate a deterministic code based on user ID
+    const secret = process.env.SUPABASE_JWT_SECRET || 'fallback-secret-for-dev'
+    const hash = crypto.createHash('md5').update(user.id + secret).digest('hex').substring(0, 8)
+    return `Sourcely-${hash}`
+}
+
+export async function verifyRobloxProfileCode(profileUrl: string) {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+        throw new Error('Not authenticated')
     }
 
-    const discordId = discordIdentity.identity_data?.provider_id || discordIdentity.identity_data?.sub || discordIdentity.id
-    if (!discordId) {
-        throw new Error('Could not find Discord ID.')
+    if (!profileUrl || !profileUrl.trim()) {
+        throw new Error('Please provide your Roblox Profile URL.')
     }
 
-    // 2. Call Bloxlink API
-    const bloxlinkApiKey = process.env.BLOXLINK_API_KEY
-    if (!bloxlinkApiKey) {
-        console.error('Missing BLOXLINK_API_KEY')
-        throw new Error('Server configuration error. Bloxlink API Key missing.')
+    // Extract the Roblox ID from the URL
+    const urlMatch = profileUrl.match(/users\/(\d+)/i)
+    if (!urlMatch || !urlMatch[1]) {
+        throw new Error('Invalid Roblox profile link. It should look like: https://www.roblox.com/users/12345678/profile')
+    }
+    const robloxId = urlMatch[1]
+
+    const expectedCode = await getRobloxVerificationCode()
+
+    // 1. Call Roblox API to get the user's profile description and name
+    const profileRes = await fetch(`https://users.roblox.com/v1/users/${robloxId}`)
+
+    if (!profileRes.ok) {
+        throw new Error('Failed to fetch Roblox profile data. Ensure the link is correct.')
     }
 
-    const bloxlinkRes = await fetch(`https://api.blox.link/v4/public/discord-to-roblox/${discordId}`, {
-        headers: {
-            'Authorization': bloxlinkApiKey
-        }
-    })
+    const profileData = await profileRes.json()
+    const actualUsername = profileData.name
+    const description = profileData.description || ''
 
-    if (!bloxlinkRes.ok) {
-        if (bloxlinkRes.status === 404) {
-            throw new Error('No linked Roblox account found on Bloxlink for your Discord account. Please verify with Bloxlink first.')
-        }
-        throw new Error('Failed to communicate with Bloxlink API.')
-    }
-
-    const bloxlinkData = await bloxlinkRes.json()
-    const robloxId = bloxlinkData.robloxID
-
-    if (!robloxId) {
-        throw new Error('No linked Roblox account found on Bloxlink.')
-    }
-
-    // 3. Call Roblox API to get username
-    const robloxRes = await fetch(`https://users.roblox.com/v1/users/${robloxId}`)
-
-    if (!robloxRes.ok) {
-        throw new Error('Failed to fetch Roblox profile data.')
-    }
-
-    const robloxData = await robloxRes.json()
-    const robloxUsername = robloxData.name
-
-    if (!robloxUsername) {
-        throw new Error('Failed to read Roblox username.')
+    // 2. Check for the code
+    if (!description.includes(expectedCode)) {
+        throw new Error(`Verification code not found! Please place "${expectedCode}" in your Roblox profile About section. It might take a minute to update on Roblox's end.`)
     }
 
     // 4. Update Database
     const { error: updateError } = await supabase
         .from('users')
         .update({
-            roblox_handle: robloxUsername,
+            roblox_handle: actualUsername,
         })
         .eq('id', user.id)
 
@@ -156,7 +148,7 @@ export async function verifyRobloxWithBloxlink() {
         throw new Error(updateError.message)
     }
 
-    return { success: true, username: robloxUsername }
+    return { success: true, username: actualUsername }
 }
 
 export async function unlinkRobloxAccount() {
@@ -189,8 +181,6 @@ export async function unlinkRobloxAccount() {
 }
 
 export async function updateSocialAccounts(data: {
-    discord_handle: string
-    roblox_handle: string
     discord_visible: boolean
     roblox_visible: boolean
 }) {
@@ -204,8 +194,6 @@ export async function updateSocialAccounts(data: {
     const { error } = await supabase
         .from('users')
         .update({
-            discord_handle: data.discord_handle,
-            roblox_handle: data.roblox_handle,
             discord_visible: data.discord_visible,
             roblox_visible: data.roblox_visible,
         })
