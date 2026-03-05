@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { updateSocialAccounts, linkDiscordAccount, unlinkDiscordAccount, verifyRobloxWithBloxlink, unlinkRobloxAccount } from '@/app/(main)/settings/actions'
+import { updateSocialAccounts, linkDiscordAccount, unlinkDiscordAccount, verifyRobloxProfileCode, getRobloxVerificationCode, unlinkRobloxAccount } from '@/app/(main)/settings/actions'
 import { Tooltip } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
-import { Loader2, Save, Link as LinkIcon, Unlink as UnlinkIcon } from 'lucide-react'
+import { Loader2, Save, Link as LinkIcon, Unlink as UnlinkIcon, CheckCircle2 } from 'lucide-react'
 import { IconBrandDiscord } from '@tabler/icons-react'
 
 const RobloxIcon = ({ className }: { className?: string }) => (
@@ -42,9 +42,16 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
     const [isLinkingDiscord, setIsLinkingDiscord] = useState(false)
     const [isUnlinkingDiscord, setIsUnlinkingDiscord] = useState(false)
 
-    // Roblox Bloxlink state
+    // Roblox Verification State
+    const [verificationCode, setVerificationCode] = useState<string>('')
+    const [robloxInputUrl, setRobloxInputUrl] = useState('')
     const [isVerifyingRoblox, setIsVerifyingRoblox] = useState(false)
     const [isUnlinkingRoblox, setIsUnlinkingRoblox] = useState(false)
+
+    useEffect(() => {
+        // Fetch verification code on mount natively
+        getRobloxVerificationCode().then(setVerificationCode).catch(console.error)
+    }, [])
 
     const handleUnlinkDiscord = async () => {
         try {
@@ -60,11 +67,16 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
     }
 
     const handleVerifyRoblox = async () => {
+        if (!robloxInputUrl) {
+            toast.error("Please enter your Roblox Profile URL.")
+            return
+        }
         try {
             setIsVerifyingRoblox(true)
-            const res = await verifyRobloxWithBloxlink()
+            const res = await verifyRobloxProfileCode(robloxInputUrl)
             setFormData(prev => ({ ...prev, roblox_handle: res.username }))
-            toast.success('Roblox verified via Bloxlink!')
+            setRobloxInputUrl('')
+            toast.success('Roblox verified successfully!')
         } catch (error: any) {
             toast.error(error.message || 'Failed to verify Roblox account')
         } finally {
@@ -88,7 +100,10 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
     const handleSave = async () => {
         try {
             setIsLoading(true)
-            await updateSocialAccounts(formData)
+            await updateSocialAccounts({
+                discord_visible: formData.discord_visible,
+                roblox_visible: formData.roblox_visible
+            })
             toast.success('Social accounts updated successfully')
         } catch (error: any) {
             toast.error(error.message || 'Failed to update social accounts')
@@ -189,6 +204,7 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
                             )}
                         </div>
                     </div>
+
                     {formData.roblox_handle ? (
                         <div className="">
                             <Input
@@ -197,17 +213,41 @@ export function SocialAccountsSettings({ initialData }: SocialAccountsSettingsPr
                                 readOnly
                                 className="bg-black/50 border-white/10 text-neutral-400 cursor-default focus-visible:ring-0 shadow-none"
                             />
+                            <p className="flex items-center gap-1.5 mt-2 text-xs text-green-400 font-medium">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Verified Profile
+                            </p>
                         </div>
                     ) : (
-                        <button
-                            type="button"
-                            disabled={!formData.discord_handle || isVerifyingRoblox}
-                            onClick={handleVerifyRoblox}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white transition-colors font-medium text-sm disabled:opacity-50"
-                        >
-                            {isVerifyingRoblox ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
-                            {!formData.discord_handle ? "Link Discord to verify Roblox" : "Verify via Bloxlink"}
-                        </button>
+                        <div className="space-y-4">
+                            <div className="p-3.5 rounded-lg bg-neutral-900 border border-neutral-800">
+                                <p className="text-sm-medium text-white mb-2">How to verify:</p>
+                                <ol className="text-xs text-neutral-400 space-y-1.5 list-decimal list-inside">
+                                    <li>Copy your secret code: <code className="bg-black px-1.5 py-0.5 rounded border border-white/10 text-blue-400 font-mono select-all ml-1">{verificationCode || 'Loading...'}</code></li>
+                                    <li>Paste it into your Roblox Profile <b>About / Description</b>.</li>
+                                    <li>Paste your full Roblox <b>Profile Link</b> below and click Verify!</li>
+                                </ol>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <Input
+                                    id="roblox_handle"
+                                    placeholder="https://www.roblox.com/users/12345678/profile"
+                                    value={robloxInputUrl}
+                                    onChange={(e) => setRobloxInputUrl(e.target.value)}
+                                    className="bg-black/50 border-white/10 text-white flex-1"
+                                />
+                                <button
+                                    type="button"
+                                    disabled={!robloxInputUrl || isVerifyingRoblox || !verificationCode}
+                                    onClick={handleVerifyRoblox}
+                                    className="px-4 py-2 rounded-lg bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white transition-colors font-medium text-sm disabled:opacity-50 min-w-[120px] flex items-center justify-center gap-2"
+                                >
+                                    {isVerifyingRoblox ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
+                                    Verify Profile
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </div>
 

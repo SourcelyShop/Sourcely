@@ -12,6 +12,7 @@ import { ProfileEditButton } from '@/components/ProfileEditButton'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { Metadata } from 'next'
+import { getRobloxProfileLink } from '@/utils/getRobloxProfileLink'
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
     const supabaseAdmin = await createAdminClient()
@@ -162,6 +163,8 @@ export default async function CustomProfilePage({
         navbarIsPremium = profile?.is_premium;
     }
 
+    const resolvedRobloxLink = user.roblox_handle ? await getRobloxProfileLink(user.roblox_handle) : '#'
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar user={currentUser} avatarUrl={navbarAvatarUrl} is_admin={navbarIsAdmin} isPremium={navbarIsPremium} />
@@ -231,7 +234,7 @@ export default async function CustomProfilePage({
                                                 </div>
                                             </Tooltip>
                                         )}
-                                        
+
                                         {isOwner && <ProfileEditButton user={user} />}
                                     </div>
 
@@ -270,9 +273,9 @@ export default async function CustomProfilePage({
                                         )}
 
                                         {(user.roblox_visible || isOwner) && user.roblox_handle && (
-                                            <Tooltip content="Search on Roblox">
+                                            <Tooltip content="Open Roblox Profile">
                                                 <a
-                                                    href={`https://www.roblox.com/search/users?keyword=${user.roblox_handle}`}
+                                                    href={resolvedRobloxLink}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors ${!user.roblox_visible ? 'opacity-50' : ''}`}
