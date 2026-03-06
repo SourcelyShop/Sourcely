@@ -1,43 +1,10 @@
 export const CHANGELOG_DATA = [
-
     {
-        version: '1.1.4',
-        date: '2025-12-29',
+        version: '0.0.1',
+        date: '2026-03-06',
         content: `
-        + Added new boost feature for premium users
-        + Added more customization features for premium users
-        + Added boost credit to make your assets more visible
-        `
-    },
-    {
-        version: '1.1.0',
-        date: '2025-12-28',
-        content: `
-        Released to public!
-        + Added new version notification
-        + Added new discover page! https://sourcely.shop/discover
-        * Changed premium payment system
-        `
-    },
-
-    {
-        version: '0.1.0',
-        date: '2025-12-27',
-        content: `
-        + Added wishlist page @david
-        + Fixed mobile bugs
-        + Added discover page! 
-        `
-    },    
-    {
-        version: '0.0.0',
-        date: '2025-12-25',
-        content: `
-+ Initial release of Sourcely
-+ Added Marketplace for buying and selling assets
-+ Added Premium Subscriptions (Monthly/Yearly)
-+ Added "Easter Egg" page with confetti 
-- Removed legacy authentication system @davidlukes
++ BETA version of Sourcely
++ Report all bugs in bug report ticket 
 `
     },
 ];
