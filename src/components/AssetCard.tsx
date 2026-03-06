@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Tag, Crown } from 'lucide-react'
 
 import { WishlistButton } from './WishlistButton'
@@ -48,10 +49,12 @@ export function AssetCard({ asset }: { asset: AssetListing }) {
                 {/* Image Area */}
                 <div className="aspect-video bg-neutral-900/50 relative overflow-hidden group-hover:brightness-110 transition-all">
                     {asset.image_url ? (
-                        <img
+                        <Image
                             src={asset.image_url}
                             alt={asset.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/0" />

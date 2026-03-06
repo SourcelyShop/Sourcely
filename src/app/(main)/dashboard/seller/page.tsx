@@ -181,19 +181,25 @@ export default async function SellerDashboard() {
                             ))}
                         </div>
                     ) : (
-                        <div className="glass-card rounded-xl border border-white/10 p-12 flex flex-col items-center justify-center text-center">
-                            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                                <Package className="w-10 h-10 text-neutral-400" />
+                        <div className="relative overflow-hidden glass-card rounded-2xl border border-white/10 p-12 sm:p-16 flex flex-col items-center justify-center text-center bg-gradient-to-b from-neutral-900/50 to-black/80">
+                            {/* Decorative background gradients */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+                            <div className="absolute -top-10 -right-10 w-[200px] h-[200px] bg-black/10 blur-[80px] rounded-full pointer-events-none" />
+
+                            <div className="relative z-10 w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/5 group-hover:scale-105 transition-transform">
+                                <Rocket className="w-12 h-12 text-white" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">No listings yet</h3>
-                            <p className="text-neutral-400 max-w-md mb-8">
-                                You haven't created any listings yet. Start selling your Roblox assets today and reach thousands of developers.
+
+                            <h3 className="relative z-10 text-3xl font-bold text-white mb-3 tracking-tight">Your Store is Empty</h3>
+                            <p className="relative z-10 text-neutral-400 max-w-lg mb-8 text-lg leading-relaxed">
+                                Join hundreds of creators making passive income. List your first Roblox model, script, or UI asset and reach thousands of developers today.
                             </p>
+
                             <Link
                                 href="/dashboard/seller/listings/new"
-                                className="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
+                                className="relative z-10 px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center gap-2 text-lg"
                             >
-                                <Plus className="w-5 h-5" />
+                                <Plus className="w-6 h-6" />
                                 Create First Listing
                             </Link>
                         </div>
