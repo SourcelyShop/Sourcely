@@ -248,8 +248,8 @@ export default async function AssetDetailPage({
                                     <BoostCountdown expiresAt={asset.boost_expires_at} />
                                 )}
                             </div>
-                            <h1 className="text-5xl font-bold mb-2 text-white drop-shadow-lg tracking-tight">{asset.title}</h1>
-                            <p className="text-lg text-neutral-300 flex items-center gap-2">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-white drop-shadow-lg tracking-tight">{asset.title}</h1>
+                            <p className="text-base md:text-lg text-neutral-300 flex items-center gap-2">
                                 Created by
                                 <Link href={`/users/${asset.seller_id}`} className="text-white font-semibold hover:text-primary transition-colors underline decoration-white/30 underline-offset-4 flex items-center gap-1">
                                     {asset.seller?.name || 'Unknown'}
@@ -267,7 +267,7 @@ export default async function AssetDetailPage({
                             <div className="flex items-end justify-between pb-6 border-b border-white/5 relative z-10">
                                 <div>
                                     <p className="text-sm text-neutral-400 font-medium mb-1 uppercase tracking-wider">Price</p>
-                                    <p className="text-5xl font-bold text-white tracking-tight">${(asset.price_cents / 100).toFixed(2)}</p>
+                                    <p className="text-4xl md:text-5xl font-bold text-white tracking-tight">${(asset.price_cents / 100).toFixed(2)}</p>
                                 </div>
                                 <div className="flex gap-2">
                                     <ShareButton
@@ -360,8 +360,8 @@ export default async function AssetDetailPage({
                                                     <span className="translate-y-[1px]">Secure payment via Stripe</span>
                                                 </div>
 
-                                                <div className="flex justify-center gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
-                                                    <div className="flex items-center gap-1.5">
+                                                <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
+                                                    <div className="flex items-center gap-1.5 whitespace-nowrap">
                                                         <ShieldCheck className="w-3.5 h-3.5" />
                                                         <span>Encrypted</span>
                                                     </div>

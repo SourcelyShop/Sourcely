@@ -93,7 +93,7 @@ export default async function SellerDashboard() {
         <div className="relative min-h-screen w-full">
             <StripeOnboardingHandler isConnected={isStripeConnected} />
             <div className="max-w-6xl mx-auto flex flex-col pt-24 px-4 pb-12 w-full">
-                <header className="flex justify-between items-center mb-8">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
                         <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">Seller Dashboard</h1>
                         <p className="text-neutral-400">Manage your listings and earnings</p>
