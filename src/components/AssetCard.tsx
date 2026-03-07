@@ -89,8 +89,8 @@ export function AssetCard({ asset }: { asset: AssetListing }) {
 
                     {/* Stats */}
                     {asset.stats && (
-                        <div className="flex items-center gap-4 text-xs text-neutral-500 mb-4">
-                            <div className="flex items-center gap-1.5">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-neutral-500 mb-4">
+                            <div className="flex items-center gap-1.5 whitespace-nowrap">
                                 <ShoppingCart className="w-3.5 h-3.5" />
                                 <span>{asset.stats.salesCount} Sales</span>
                             </div>
