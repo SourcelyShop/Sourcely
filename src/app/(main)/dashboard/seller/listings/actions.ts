@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { verifyAssetUrl } from '@/utils/verifyAssetUrl'
 
 export async function createListing(formData: FormData) {
     try {
@@ -25,9 +26,14 @@ export async function createListing(formData: FormData) {
         const description = formData.get('description') as string
         const price = parseFloat(formData.get('price') as string)
         const category = formData.get('category') as string
-        // For MVP, file_url is a placeholder or text input
         const file_url = formData.get('file_url') as string
         const imageFile = formData.get('image') as File
+
+        // Verify the asset URL isn't a scam/empty
+        const isUrlValid = await verifyAssetUrl(file_url)
+        if (!isUrlValid) {
+            throw new Error('The provided Asset Download URL is invalid or points to an empty file. Please provide a working, accessible link.')
+        }
 
         let image_url = null
 
