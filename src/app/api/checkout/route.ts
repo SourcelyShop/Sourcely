@@ -28,6 +28,16 @@ export async function POST(request: Request) {
         return NextResponse.redirect(`${origin}/login?next=/assets/${listingId}`)
     }
 
+    const { data: buyerData } = await supabase
+        .from('users')
+        .select('email, stripe_customer_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!user) {
+        return NextResponse.redirect(`${origin}/login?next=/assets/${listingId}`)
+    }
+
     // Fetch listing details using Admin Client to bypass RLS for seller info
     const supabaseAdmin = await createAdminClient()
     const { data: listing } = await supabaseAdmin
@@ -53,7 +63,7 @@ export async function POST(request: Request) {
 
     try {
         // Create Stripe Checkout Session
-        const session = await stripe.checkout.sessions.create({
+        const sessionPayload: any = {
             mode: 'payment',
             line_items: [
                 {
@@ -62,7 +72,6 @@ export async function POST(request: Request) {
                         product_data: {
                             name: listing.title,
                             description: listing.description,
-                            // images: [listing.file_url], // Optional: Add image if available
                             metadata: {
                                 listingId: listing.id,
                                 sellerId: listing.seller_id,
@@ -93,7 +102,18 @@ export async function POST(request: Request) {
             },
             success_url: `${origin}/assets/${listing.id}?success=true`,
             cancel_url: `${origin}/assets/${listing.id}?canceled=true`,
-        })
+        }
+
+        if (buyerData?.stripe_customer_id) {
+            sessionPayload.customer = buyerData.stripe_customer_id
+        } else {
+            if (buyerData?.email) {
+                sessionPayload.customer_email = buyerData.email
+            }
+            sessionPayload.customer_creation = 'always'
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionPayload)
 
         if (!session.url) {
             return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })

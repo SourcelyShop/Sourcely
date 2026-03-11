@@ -97,6 +97,14 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'Error creating order' }, { status: 500 })
             }
 
+            // Save the Stripe Customer ID if they don't have one yet so they can access the Customer Portal
+            if (session.customer) {
+                await supabaseAdmin
+                    .from('users')
+                    .update({ stripe_customer_id: session.customer as string })
+                    .eq('id', metadata.buyerId)
+            }
+
             // Create Notification for Seller
             const { error: notificationError } = await supabaseAdmin
                 .from('notifications')
