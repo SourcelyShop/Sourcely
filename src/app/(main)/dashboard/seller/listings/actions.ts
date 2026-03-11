@@ -25,9 +25,13 @@ export async function createListing(formData: FormData) {
         const description = formData.get('description') as string
         const price = parseFloat(formData.get('price') as string)
         const category = formData.get('category') as string
-        // For MVP, file_url is a placeholder or text input
-        const file_url = formData.get('file_url') as string
+        const file_url = formData.get('b2_file_path') as string
+        const file_size_bytes = parseInt(formData.get('b2_file_size') as string || '0', 10)
         const imageFile = formData.get('image') as File
+
+        if (!file_url) {
+            throw new Error('Please upload an asset file before publishing.')
+        }
 
         let image_url = null
 
@@ -62,6 +66,7 @@ export async function createListing(formData: FormData) {
                 price_cents,
                 category,
                 file_url,
+                file_size_bytes,
                 image_url,
             })
 

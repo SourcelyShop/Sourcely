@@ -1,11 +1,21 @@
 import { createAdminClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
+import { S3Client, DeleteObjectCommand, ListObjectVersionsCommand } from "@aws-sdk/client-s3"
 
 export async function GET(request: Request) {
     try {
         const supabase = await createAdminClient()
         const { searchParams } = new URL(request.url)
         const forceId = searchParams.get('forceId')
+
+        const s3 = new S3Client({
+            endpoint: process.env.NEXT_PUBLIC_B2_ENDPOINT,
+            region: "eu-central-003",
+            credentials: {
+                accessKeyId: process.env.B2_KEY_ID as string,
+                secretAccessKey: process.env.B2_APPLICATION_KEY as string,
+            },
+        });
 
         let assetsToDelete = []
         let fetchError = null
@@ -60,6 +70,64 @@ export async function GET(request: Request) {
                     } catch (e) {
                         console.error('Error parsing image URL:', e)
                     }
+                }
+            }
+
+            // 1b. Delete the main asset file from Backblaze B2
+            if (asset.file_url) {
+                try {
+                    // Try to extract the B2 key from the file_url or use the raw key if it is stored directly
+                    let fileKey = asset.file_url;
+
+                    if (fileKey) {
+                        debugLogs.push(`Attempting to delete B2 file: ${fileKey}`);
+                        const listCommand = new ListObjectVersionsCommand({
+                            Bucket: process.env.B2_BUCKET_NAME,
+                            Prefix: fileKey,
+                        });
+                        const listResult = await s3.send(listCommand);
+
+                        const deletePromises: Promise<any>[] = [];
+
+                        if (listResult.Versions && listResult.Versions.length > 0) {
+                            for (const version of listResult.Versions) {
+                                if (version.Key === fileKey && version.VersionId) {
+                                    deletePromises.push(s3.send(new DeleteObjectCommand({
+                                        Bucket: process.env.B2_BUCKET_NAME,
+                                        Key: fileKey,
+                                        VersionId: version.VersionId,
+                                    })));
+                                }
+                            }
+                        }
+
+                        if (listResult.DeleteMarkers && listResult.DeleteMarkers.length > 0) {
+                            for (const marker of listResult.DeleteMarkers) {
+                                if (marker.Key === fileKey && marker.VersionId) {
+                                    deletePromises.push(s3.send(new DeleteObjectCommand({
+                                        Bucket: process.env.B2_BUCKET_NAME,
+                                        Key: fileKey,
+                                        VersionId: marker.VersionId,
+                                    })));
+                                }
+                            }
+                        }
+
+                        if (deletePromises.length > 0) {
+                            await Promise.all(deletePromises);
+                            debugLogs.push(`Deleted ${deletePromises.length} versions/markers of B2 file: ${fileKey}`);
+                        } else {
+                            const fallbackCommand = new DeleteObjectCommand({
+                                Bucket: process.env.B2_BUCKET_NAME,
+                                Key: fileKey,
+                            });
+                            await s3.send(fallbackCommand);
+                            debugLogs.push(`Deleted fallback B2 file: ${fileKey}`);
+                        }
+                    }
+                } catch (e: any) {
+                    console.error("Failed to delete B2 file during cron:", e);
+                    debugLogs.push(`Failed to delete B2 file ${asset.file_url}: ${e.message}`);
                 }
             }
 
