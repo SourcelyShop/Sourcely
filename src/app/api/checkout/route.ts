@@ -5,8 +5,20 @@ import { stripe } from '@/utils/stripe/server'
 const PLATFORM_COMMISSION_RATE = 0.2 // 20% commission
 
 export async function POST(request: Request) {
-    const formData = await request.formData()
-    const listingId = formData.get('listingId') as string
+    let listingId: string;
+
+    // Support both JSON clients and traditional Form submissions
+    const contentType = request.headers.get('content-type') || '';
+    const isJson = contentType.includes('application/json');
+
+    if (isJson) {
+        const body = await request.json();
+        listingId = body.listingId;
+    } else {
+        const formData = await request.formData();
+        listingId = formData.get('listingId') as string;
+    }
+
     const origin = new URL(request.url).origin
 
     const supabase = await createClient()
@@ -87,7 +99,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
         }
 
-        return NextResponse.redirect(session.url, 303)
+        if (isJson) {
+            return NextResponse.json({ url: session.url });
+        } else {
+            return NextResponse.redirect(session.url, 303);
+        }
     } catch (err: any) {
         console.error('Stripe Checkout Error:', err)
         return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 })

@@ -1,9 +1,11 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { formatDistanceToNow } from 'date-fns'
 import { notFound, redirect } from 'next/navigation'
-import { Tag, ShieldCheck, Download, Crown } from 'lucide-react'
+import { Tag, ShieldCheck, Download, Crown, Database } from 'lucide-react'
 import { DownloadButton } from '@/components/DownloadButton'
+import { PurchaseButton } from '@/components/PurchaseButton'
 import { ShieldCheckIcon } from '@/components/ShieldCheckIcon'
+import { formatBytes } from '@/utils/formatBytes'
 import { ShoppingCartIcon } from '@/components/ShoppingCartIcon'
 import Link from 'next/link'
 import { WavyBackground } from "@/components/ui/wavy-background";
@@ -244,6 +246,12 @@ export default async function AssetDetailPage({
                                 <span className="px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium border border-white/10 backdrop-blur-md">
                                     {asset.category}
                                 </span>
+                                {asset.file_size_bytes != null && asset.file_size_bytes > 0 && (
+                                    <span className="px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium border border-white/10 backdrop-blur-md flex items-center gap-1.5">
+                                        <Database className="w-3.5 h-3.5 text-neutral-400" />
+                                        {formatBytes(asset.file_size_bytes)}
+                                    </span>
+                                )}
                                 {asset.boost_expires_at && new Date(asset.boost_expires_at) > new Date() && (
                                     <BoostCountdown expiresAt={asset.boost_expires_at} />
                                 )}
@@ -312,72 +320,61 @@ export default async function AssetDetailPage({
                                         <ShieldCheckIcon className="w-6 h-6" />
                                         <span className="font-semibold">You own this asset</span>
                                     </div>
-                                    <DownloadButton fileUrl={asset.file_url} />
+                                    <DownloadButton fileUrl={`/api/download-ticket?assetId=${asset.id}`} />
                                 </div>
-                            ) : (
-                                asset.deletion_scheduled_at ? (
+                            ) : asset.deletion_scheduled_at ? (
+                                <button
+                                    disabled
+                                    className="w-full py-4 bg-neutral-800 text-neutral-500 font-bold text-xl rounded-xl border border-white/5 cursor-not-allowed relative z-10"
+                                >
+                                    Discontinued
+                                </button>
+                            ) : asset.price_cents === 0 ? (
+                                <form action={async () => {
+                                    'use server'
+                                    await claimFreeAsset(asset.id)
+                                }}>
                                     <button
-                                        disabled
-                                        className="w-full py-4 bg-neutral-800 text-neutral-500 font-bold text-xl rounded-xl border border-white/5 cursor-not-allowed relative z-10"
+                                        type="submit"
+                                        className="w-full py-4 bg-white text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
                                     >
-                                        Discontinued
+                                        Get for Free
                                     </button>
-                                ) : (
-                                    asset.price_cents === 0 ? (
-                                        <form action={async () => {
-                                            'use server'
-                                            await claimFreeAsset(asset.id)
-                                        }}>
-                                            <button
-                                                type="submit"
-                                                className="w-full py-4 bg-white text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
-                                            >
-                                                Get for Free
-                                            </button>
-                                            <p className="text-center text-xs text-neutral-400 mt-4">
-                                                Instant addition to your library
-                                            </p>
-                                        </form>
-                                    ) : (
-                                        <form action="/api/checkout" method="POST" className="relative z-10">
-                                            <input type="hidden" name="listingId" value={asset.id} />
-                                            <button
-                                                type="submit"
-                                                className="w-full py-4 bg-gradient-to-r from-white to-neutral-200 hover:from-neutral-100 hover:to-neutral-300 text-black font-bold text-xl rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/50"
-                                            >
-                                                Buy Now
-                                            </button>
+                                    <p className="text-center text-xs text-neutral-400 mt-4">
+                                        Instant addition to your library
+                                    </p>
+                                </form>
+                            ) : (
+                                <div className="relative z-10 w-full">
+                                    <PurchaseButton listingId={asset.id} priceCents={asset.price_cents} />
 
+                                    <div className="mt-6 space-y-4">
+                                        <div className="flex items-center justify-center gap-2 text-sm text-neutral-400">
+                                            <img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                                                alt="Stripe"
+                                                className="h-6 opacity-90 hover:opacity-100 transition-opacity"
+                                                style={{ filter: 'brightness(0) invert(1)' }}
+                                            />
+                                            <span className="translate-y-[1px]">Secure payment via Stripe</span>
+                                        </div>
 
-                                            <div className="mt-6 space-y-4">
-                                                <div className="flex items-center justify-center gap-2 text-sm text-neutral-400">
-                                                    <img
-                                                        src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
-                                                        alt="Stripe"
-                                                        className="h-6 opacity-90 hover:opacity-100 transition-opacity"
-                                                        style={{ filter: 'brightness(0) invert(1)' }}
-                                                    />
-                                                    <span className="translate-y-[1px]">Secure payment via Stripe</span>
-                                                </div>
-
-                                                <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
-                                                    <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                                        <span>Encrypted</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Download className="w-3.5 h-3.5" />
-                                                        <span>Instant Delivery</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Tag className="w-3.5 h-3.5" />
-                                                        <span>Verified Asset</span>
-                                                    </div>
-                                                </div>
+                                        <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs text-neutral-500 border-t border-white/5 pt-4">
+                                            <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                                <span>Encrypted</span>
                                             </div>
-                                        </form>
-                                    )
-                                )
+                                            <div className="flex items-center gap-1.5">
+                                                <Download className="w-3.5 h-3.5" />
+                                                <span>Instant Delivery</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <Tag className="w-3.5 h-3.5" />
+                                                <span>Verified Asset</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
 
                             <div className="pt-6 border-t border-white/5 flex justify-between items-center">
@@ -398,6 +395,6 @@ export default async function AssetDetailPage({
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

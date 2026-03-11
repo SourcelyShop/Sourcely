@@ -3,7 +3,6 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { verifyAssetUrl } from '@/utils/verifyAssetUrl'
 
 export async function createListing(formData: FormData) {
     try {
@@ -26,13 +25,12 @@ export async function createListing(formData: FormData) {
         const description = formData.get('description') as string
         const price = parseFloat(formData.get('price') as string)
         const category = formData.get('category') as string
-        const file_url = formData.get('file_url') as string
+        const file_url = formData.get('b2_file_path') as string
+        const file_size_bytes = parseInt(formData.get('b2_file_size') as string || '0', 10)
         const imageFile = formData.get('image') as File
 
-        // Verify the asset URL isn't a scam/empty
-        const isUrlValid = await verifyAssetUrl(file_url)
-        if (!isUrlValid) {
-            throw new Error('The provided Asset Download URL is invalid or points to an empty file. Please provide a working, accessible link.')
+        if (!file_url) {
+            throw new Error('Please upload an asset file before publishing.')
         }
 
         let image_url = null
@@ -68,6 +66,7 @@ export async function createListing(formData: FormData) {
                 price_cents,
                 category,
                 file_url,
+                file_size_bytes,
                 image_url,
             })
 
